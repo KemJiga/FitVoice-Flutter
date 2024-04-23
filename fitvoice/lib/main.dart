@@ -1,4 +1,4 @@
-import 'package:fitvoice/screens/tabs_screen.dart';
+import 'package:fitvoice/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       locale: const Locale('es', 'ES'),
-      title: 'Flutter Demo',
+      title: 'Fit Voice',
       theme: ThemeData(
         //scaffoldBackgroundColor: const Color.fromARGB(255, 22, 22, 25),
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
@@ -29,7 +29,7 @@ class MyApp extends StatelessWidget {
         ),
         useMaterial3: true,
       ),
-      home: const TabsScreen(),
+      home: const SplashScreen(),
     );
   }
 }
