@@ -1,3 +1,5 @@
+import 'package:fitvoice/dummydata.dart';
+import 'package:fitvoice/models/user_model.dart';
 import 'package:fitvoice/screens/dashboard_screen.dart';
 import 'package:fitvoice/screens/database_screen.dart';
 import 'package:fitvoice/screens/meal_reports_screen.dart';
@@ -10,10 +12,11 @@ import 'package:intl/intl.dart';
 class TabsScreen extends StatefulWidget {
   const TabsScreen({super.key});
 
-  getDate() {
+  String getDate() {
+    final String locale = Intl.getCurrentLocale();
     DateTime now = DateTime.now();
-    String formatter = DateFormat('MMMM d, EEEE').format(now);
-    return formatter;
+    String formattedDate = DateFormat('MMMM d, EEEE', locale).format(now);
+    return formattedDate;
   }
 
   @override
@@ -23,7 +26,8 @@ class TabsScreen extends StatefulWidget {
 }
 
 class _TabsScreenState extends State<TabsScreen> {
-  int _selectedPageIndex = 0;
+  int _selectedPageIndex = 2;
+  UserModel user = dummyUser;
 
   void _selectPage(int index) {
     setState(() {
@@ -33,43 +37,51 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage = const RecordScreen(); // cambiar a la pagina default
+    Widget activePage =
+        const RecordScreen(); // cambiar a la pagina default (log in)
 
     var date = widget.getDate();
 
-    var activePagename = "Record";
+    var activePagename = "Grabar";
     switch (_selectedPageIndex) {
       case 0:
         activePage = const DashboardScreen();
-        activePagename = "Dashboard";
+        activePagename = "Principal";
         break;
       case 1:
-        activePage = const ReportsScreen();
-        activePagename = "Reports";
+        activePage = ReportsScreen(changePage: _selectPage);
+        activePagename = "Reportes";
         break;
       case 2:
         activePage = const RecordScreen();
-        activePagename = "Record";
+        activePagename = "Grabar";
         break;
       case 3:
         activePage = const DatabaseScreen();
-        activePagename = "Database";
+        activePagename = "Datos";
         break;
       case 4:
-        activePage = const ProfileScreen();
-        activePagename = "Profile";
+        activePage = ProfileScreen(
+          user: user,
+        );
+        activePagename = "Perfil";
         break;
     }
 
     return Scaffold(
       appBar: AppBar(
+        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
         title: Center(
           child: Column(
             children: [
-              Text(activePagename),
+              Text(
+                activePagename,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
               Text(
                 date,
-                style: const TextStyle(fontSize: 12),
+                style:
+                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
               ),
             ],
           ),
@@ -82,23 +94,23 @@ class _TabsScreenState extends State<TabsScreen> {
         items: const [
           BottomNavigationBarItem(
             icon: Icon(Icons.dashboard),
-            label: 'Dashboard',
+            label: 'Principal',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.class_outlined),
-            label: 'Reports',
+            label: 'Reportes',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.mic_none_outlined),
-            label: 'Record',
+            label: 'Grabar',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.description_outlined),
-            label: 'Database',
+            label: 'Datos',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person_outline_rounded),
-            label: 'Profile',
+            label: 'Perfil',
           ),
         ],
       ),
