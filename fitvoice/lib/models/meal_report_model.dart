@@ -1,13 +1,24 @@
-import 'food_report_model.dart';
+import 'package:fitvoice/models/food_items_model.dart';
 
 class MealReportModel {
-  late String id;
-  late String appUserId;
-  late String audioId;
-  late String rawTranscript;
-  late List<FoodReportReview> foodReports;
-  late String dbLookupPreference;
-  late DateTime mealRecordedAt;
-  late bool pending;
-  late bool reviewed;
+  MealReportModel({
+    required this.id,
+    required this.appUserId,
+    required this.audioId,
+    required this.rawTranscript,
+    required this.foodReports,
+    required this.dbLookupPreference,
+    required this.mealRecordedAt,
+    required this.pending,
+    required this.reviewed,
+  });
+  String id;
+  String appUserId;
+  String audioId;
+  String rawTranscript;
+  List<FoodItemsModel> foodReports;
+  String dbLookupPreference;
+  DateTime mealRecordedAt;
+  bool pending;
+  bool reviewed;
 }
