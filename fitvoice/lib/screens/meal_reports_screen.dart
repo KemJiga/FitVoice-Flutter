@@ -1,26 +1,31 @@
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:flutter/material.dart';
 
-import 'package:fitvoice/dummydata.dart';
+//import 'package:fitvoice/dummydata.dart';
 import 'package:fitvoice/widgets/listof_mr.dart';
 
 class ReportsScreen extends StatefulWidget {
   final void Function(int) changePage;
+  final List<MealReportCard> pendingReports;
+  final List<MealReportCard> readedReports;
 
-  const ReportsScreen({super.key, required this.changePage});
+  const ReportsScreen(
+      {super.key,
+      required this.changePage,
+      required this.pendingReports,
+      required this.readedReports});
 
-  //fetches all the reports from the database
-  getPendingReports() {
-    //fetch pending reports
-    List<MealReportCard> pedingR = newMealReports;
-    return pedingR;
-  }
+  //TODO: los datos seran pasados como parametros de clase desde la tabscreen
+  // getPendingReports() {
+  //   List<MealReportCard> pedingR =
+  //       dummyData.map((e) => MealReportCard(mealReport: e)).toList();
+  //   return pedingR;
+  // }
 
-  getReadedReports() {
-    //fetch readed reports
-    List<MealReportCard> readedR = readedReports;
-    return readedR;
-  }
+  // getReadedReports() {
+  //   List<MealReportCard> readedR = [];
+  //   return readedR;
+  // }
 
   @override
   State<StatefulWidget> createState() {
@@ -29,21 +34,19 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportsScreen> {
-  late List<MealReportCard> _pendingReports;
-  late List<MealReportCard> _readedReports;
-  void getDisplayableReports() {
-    setState(() {
-      _pendingReports = widget.getPendingReports();
-      _readedReports = widget.getReadedReports();
-    });
-  }
+  // late List<MealReportCard> _pendingReports;
+  // late List<MealReportCard> _readedReports;
+  // void getDisplayableReports() {
+  //   setState(() {
+  //     _pendingReports = widget.getPendingReports();
+  //     _readedReports = widget.getReadedReports();
+  //   });
+  // }
 
   @override
   void initState() {
     super.initState();
-    //_pendingReports = [];
-    //_readedReports = [];
-    getDisplayableReports();
+    // getDisplayableReports();
   }
 
   @override
@@ -53,8 +56,8 @@ class _ReportScreenState extends State<ReportsScreen> {
       child: ListOfMealReports(
         // se supone que la funcion getReports retorna una lista de informacion util para hacer los MRR
         // eso es lo que se le envia a la lista de MRR, no el objeto MealReportCard
-        newMealReports: _pendingReports,
-        readedReports: _readedReports,
+        newMealReports: widget.pendingReports,
+        readedReports: widget.readedReports,
         changePage: widget.changePage,
       ),
     );
