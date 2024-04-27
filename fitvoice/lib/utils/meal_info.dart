@@ -1,4 +1,5 @@
 import 'package:fitvoice/models/food_items_model.dart';
+import 'package:fitvoice/models/meal_report_model.dart';
 
 class MealInfoExtractor {
   //verify if list is null
@@ -16,9 +17,21 @@ class MealInfoExtractor {
     return foodReports.isEmpty;
   }
 
-  List<int> getMealInfo() {
-    getFoodInfo(foodReports);
+  List<int> getMealInfo(List<FoodItemsModel>? reports) {
+    if (reports == null) {
+      getFoodInfo(foodReports);
+    } else {
+      getFoodInfo(reports);
+    }
     return [protein, fat, carbs, calories];
+  }
+
+  List<MealReportModel> getTodayFoodReports(List<MealReportModel> reports) {
+    DateTime now = DateTime.now();
+    DateTime today = DateTime(now.year, now.month, now.day);
+    return reports
+        .where((element) => element.mealRecordedAt.isAfter(today))
+        .toList();
   }
 
   void getFoodInfo(List<FoodItemsModel> foodReports) {
