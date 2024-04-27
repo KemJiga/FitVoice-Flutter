@@ -6,7 +6,7 @@ class DatabaseScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const Center(
-      child: Text('DatabaseScreen Screen'),
+      child: Text('Coming soon'),
     );
   }
 }
