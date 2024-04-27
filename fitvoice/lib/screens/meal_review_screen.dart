@@ -1,5 +1,6 @@
 import 'package:fitvoice/screens/suggested_food_screen.dart';
 import 'package:fitvoice/utils/meal_info.dart';
+import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/food_report.dart';
 import 'package:flutter/material.dart';
 import 'package:fitvoice/models/meal_report_model.dart';
@@ -16,7 +17,7 @@ class MealReviewScreen extends StatelessWidget {
   MealReviewScreen({super.key, required this.mealReport}) {
     final mealInfoExtractor =
         MealInfoExtractor(foodReports: mealReport.foodReports);
-    final mealInfo = mealInfoExtractor.getMealInfo();
+    final mealInfo = mealInfoExtractor.getMealInfo(null);
     protein = mealInfo[0];
     fat = mealInfo[1];
     carbs = mealInfo[2];
@@ -81,7 +82,7 @@ class MealReviewScreen extends StatelessWidget {
                       'Informacion de la comida:',
                       style: TextStyle(
                         fontSize: 20,
-                        color: Color.fromRGBO(225, 66, 90, 1),
+                        color: Estilos.color2,
                       ),
                     ),
                     Padding(

@@ -1,10 +1,12 @@
 import 'package:fitvoice/dummydata.dart';
+import 'package:fitvoice/models/meal_report_model.dart';
 import 'package:fitvoice/models/user_model.dart';
 import 'package:fitvoice/screens/dashboard_screen.dart';
 import 'package:fitvoice/screens/database_screen.dart';
 import 'package:fitvoice/screens/meal_reports_screen.dart';
 import 'package:fitvoice/screens/profile_screen.dart';
 import 'package:fitvoice/screens/record_screen.dart';
+import 'package:fitvoice/widgets/meal_report.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
@@ -17,6 +19,10 @@ class TabsScreen extends StatefulWidget {
     DateTime now = DateTime.now();
     String formattedDate = DateFormat('MMMM d, EEEE', locale).format(now);
     return formattedDate;
+  }
+
+  List<MealReportModel> fetchReports() {
+    return dummyData;
   }
 
   @override
@@ -37,19 +43,25 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage =
-        const RecordScreen(); // cambiar a la pagina default (log in)
+    Widget activePage = const RecordScreen();
 
     var date = widget.getDate();
+    var data = widget.fetchReports();
+    var dataCards = data.map((e) => MealReportCard(mealReport: e)).toList();
 
     var activePagename = "Grabar";
     switch (_selectedPageIndex) {
       case 0:
-        activePage = const DashboardScreen();
+        activePage = DashboardScreen(
+          reports: data,
+        );
         activePagename = "Principal";
         break;
       case 1:
-        activePage = ReportsScreen(changePage: _selectPage);
+        activePage = ReportsScreen(
+            changePage: _selectPage,
+            pendingReports: dataCards,
+            readedReports: []);
         activePagename = "Reportes";
         break;
       case 2:

@@ -1,3 +1,4 @@
+import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:fitvoice/widgets/report_list.dart';
@@ -50,24 +51,27 @@ class ListOfMealReports extends StatelessWidget {
         : Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Nuevos reportes',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Color.fromRGBO(46, 209, 46, 1),
+              if (newMealReports.isNotEmpty)
+                const Text(
+                  'Nuevos reportes',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Estilos.color1,
+                  ),
                 ),
-              ),
-              ReportList(reports: newMealReports),
-              const Text(
-                'Reportes leidos',
-                style: TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                  color: Color.fromRGBO(225, 66, 90, 1),
+              if (newMealReports.isNotEmpty)
+                ReportList(reports: newMealReports),
+              if (readedReports.isNotEmpty)
+                const Text(
+                  'Reportes leidos',
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 20,
+                    color: Estilos.color2,
+                  ),
                 ),
-              ),
-              ReportList(reports: readedReports),
+              if (readedReports.isNotEmpty) ReportList(reports: readedReports),
             ],
           );
   }
