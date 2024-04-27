@@ -1,8 +1,12 @@
+// ignore_for_file: unused_field
+
 import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
+import 'dart:math' as math;
 
 import 'package:audioplayers/audioplayers.dart';
+import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/foundation.dart';
 import 'package:on_audio_query/on_audio_query.dart';
 import 'package:path_provider/path_provider.dart';
@@ -29,7 +33,7 @@ class _RecordScreenState extends State<RecordScreen> {
   String? _audioPath;
 
   bool _isPlaying = false;
-  bool _isPaused = false;
+  bool _recorded = false;
   Duration _audioDuration = Duration.zero;
   Duration _audioPosition = Duration.zero;
 
@@ -102,6 +106,13 @@ class _RecordScreenState extends State<RecordScreen> {
     if (_audioPath?.isNotEmpty ?? false) {
       log(path!);
     }
+    if (mounted) {
+      setState(() {
+        _isRecording = false;
+        _recorded = true;
+        _time = 0;
+      });
+    }
   }
 
   Future<void> playSound() async {
@@ -154,35 +165,50 @@ class _RecordScreenState extends State<RecordScreen> {
         children: [
           const Text('Graba lo que comiste hoy!'),
           const SizedBox(height: 40),
-          Container(
-            decoration: const BoxDecoration(
-              shape: BoxShape.circle,
-              color: Color.fromARGB(255, 55, 203, 85),
-            ),
-            child: IconButton(
-              iconSize: 100,
-              onPressed: () {
-                if (!_isRecording) {
-                  _startRecording();
-                  _startTimer();
-                  setState(() {
-                    _isRecording = true;
-                  });
-                } else {
-                  _stopRecording();
-                  _timer?.cancel();
-                  setState(() {
-                    _isRecording = false;
-                    _time = 0;
-                  });
-                }
-              },
-              icon: Icon(_isRecording ? Icons.stop : Icons.mic_none_outlined),
-            ),
+          Stack(
+            children: [
+              SizedBox(
+                width: 120,
+                height: 120,
+                child: CustomPaint(
+                  painter: MyCirclePainter(),
+                ),
+              ),
+              Container(
+                width: 120,
+                height: 120,
+                alignment: Alignment.center,
+                child: IconButton(
+                  iconSize: 75,
+                  onPressed: () {
+                    if (!_isRecording) {
+                      _startRecording();
+                      _startTimer();
+                      setState(() {
+                        _audioPosition = Duration.zero;
+                        _isRecording = true;
+                        _recorded = false;
+                      });
+                    } else {
+                      _stopRecording();
+                      _timer?.cancel();
+                      setState(() {
+                        _isRecording = false;
+                        _recorded = true;
+                        _time = 0;
+                      });
+                    }
+                  },
+                  icon:
+                      Icon(_isRecording ? Icons.stop : Icons.mic_none_outlined),
+                ),
+              ),
+            ],
           ),
           const SizedBox(height: 20),
           Column(
             children: [
+              if (_recorded) const Text('Escucha tu grabación! ⬇️'),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -216,7 +242,7 @@ class _RecordScreenState extends State<RecordScreen> {
                 onChanged: (value) {
                   seekSound(value.toInt());
                 },
-                activeColor: const Color.fromARGB(255, 55, 203, 85),
+                activeColor: Estilos.color1,
               ),
               Text(
                   '${formatTime((_audioDuration - _audioPosition).inSeconds)}s'),
@@ -243,4 +269,66 @@ class _RecordScreenState extends State<RecordScreen> {
       ),
     );
   }
+}
+
+class MyCirclePainter extends CustomPainter {
+  @override
+  void paint(Canvas canvas, Size size) {
+    double radius = (size.width - 12) / 2;
+    Offset center = Offset(size.width / 2, size.height / 2);
+
+    Paint paintBase = Paint()
+      ..color = Colors.black12
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke;
+
+    Paint paintArc1 = Paint()
+      //..color = Colors.amber
+      ..shader = const RadialGradient(
+        colors: [
+          Color.fromRGBO(253, 208, 14, 1),
+          Color.fromRGBO(255, 169, 53, 1),
+        ],
+      ).createShader(
+        Rect.fromCircle(center: center, radius: radius),
+      )
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke;
+
+    Paint paintArc2 = Paint()
+      ..shader = const RadialGradient(
+        colors: [
+          Color.fromRGBO(83, 210, 144, 1),
+          Color.fromRGBO(46, 209, 46, 1),
+        ],
+      ).createShader(
+        Rect.fromCircle(center: center, radius: radius),
+      )
+      ..strokeWidth = 5
+      ..style = PaintingStyle.stroke;
+
+    canvas.drawCircle(center, radius, paintBase);
+
+    double arcStartAngle = -math.pi / 2; // Start angle for the first arc
+    double arcSweepAngle = 2 * math.pi / 3; // Sweep angle for each arc
+
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      arcStartAngle,
+      arcSweepAngle,
+      false,
+      paintArc1,
+    );
+    arcStartAngle += (arcSweepAngle * 1.05);
+    canvas.drawArc(
+      Rect.fromCircle(center: center, radius: radius),
+      arcStartAngle,
+      arcSweepAngle,
+      false,
+      paintArc2,
+    );
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) => true;
 }
