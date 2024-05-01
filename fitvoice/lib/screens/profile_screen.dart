@@ -1,5 +1,6 @@
 import 'package:fitvoice/models/user_model.dart';
 import 'package:fitvoice/screens/edit_profile.dart';
+import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 
 // ignore: must_be_immutable
@@ -71,7 +72,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ),
               );
             },
-            child: const Text('Editar perfil'),
+            child: const Text('Editar perfil',
+                style: TextStyle(color: Estilos.color1)),
           ),
         ],
       ),

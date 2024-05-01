@@ -39,7 +39,7 @@ class ListOfMealReports extends StatelessWidget {
                         'Agrega aqui!',
                         style: TextStyle(
                           fontSize: 16,
-                          color: Color.fromRGBO(46, 209, 46, 1),
+                          color: Estilos.color1,
                         ),
                       ),
                     ),

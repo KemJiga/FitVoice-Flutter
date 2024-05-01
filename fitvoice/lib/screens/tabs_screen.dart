@@ -6,6 +6,7 @@ import 'package:fitvoice/screens/database_screen.dart';
 import 'package:fitvoice/screens/meal_reports_screen.dart';
 import 'package:fitvoice/screens/profile_screen.dart';
 import 'package:fitvoice/screens/record_screen.dart';
+import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 
 import 'package:flutter/material.dart';
@@ -88,12 +89,18 @@ class _TabsScreenState extends State<TabsScreen> {
             children: [
               Text(
                 activePagename,
-                style: const TextStyle(fontWeight: FontWeight.bold),
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  color: Estilos.color5,
+                ),
               ),
               Text(
                 date,
-                style:
-                    const TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                style: const TextStyle(
+                  fontSize: 12,
+                  fontWeight: FontWeight.w400,
+                  color: Estilos.color5,
+                ),
               ),
             ],
           ),
@@ -101,6 +108,7 @@ class _TabsScreenState extends State<TabsScreen> {
       ),
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
+        selectedItemColor: Estilos.color1,
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
         items: const [

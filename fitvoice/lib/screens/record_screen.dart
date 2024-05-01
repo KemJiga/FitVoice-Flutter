@@ -260,7 +260,10 @@ class _RecordScreenState extends State<RecordScreen> {
                     //Navigator.pop(context);
                   });
                 },
-                child: const Text('Enviar grabación'),
+                child: const Text(
+                  'Enviar grabación',
+                  style: TextStyle(color: Estilos.color1),
+                ),
               ),
             ],
           ),
@@ -278,32 +281,17 @@ class MyCirclePainter extends CustomPainter {
     Offset center = Offset(size.width / 2, size.height / 2);
 
     Paint paintBase = Paint()
-      ..color = Colors.black12
+      ..color = Estilos.color1
       ..strokeWidth = 5
       ..style = PaintingStyle.stroke;
 
     Paint paintArc1 = Paint()
-      //..color = Colors.amber
-      ..shader = const RadialGradient(
-        colors: [
-          Color.fromRGBO(253, 208, 14, 1),
-          Color.fromRGBO(255, 169, 53, 1),
-        ],
-      ).createShader(
-        Rect.fromCircle(center: center, radius: radius),
-      )
+      ..color = Estilos.color4
       ..strokeWidth = 5
       ..style = PaintingStyle.stroke;
 
     Paint paintArc2 = Paint()
-      ..shader = const RadialGradient(
-        colors: [
-          Color.fromRGBO(83, 210, 144, 1),
-          Color.fromRGBO(46, 209, 46, 1),
-        ],
-      ).createShader(
-        Rect.fromCircle(center: center, radius: radius),
-      )
+      ..color = Estilos.color2
       ..strokeWidth = 5
       ..style = PaintingStyle.stroke;
 
@@ -319,7 +307,7 @@ class MyCirclePainter extends CustomPainter {
       false,
       paintArc1,
     );
-    arcStartAngle += (arcSweepAngle * 1.05);
+    arcStartAngle += (arcSweepAngle);
     canvas.drawArc(
       Rect.fromCircle(center: center, radius: radius),
       arcStartAngle,

@@ -38,6 +38,7 @@ class MealReviewScreen extends StatelessWidget {
   }
 
   //TODO: actualizar el estado del reporte a revisado
+  //TODO: agregar form para editar cantidad de los alimentos
   Future<bool> _saveMealReview(BuildContext context) async {
     bool exitReport = await showDialog(
       context: context,
@@ -50,7 +51,8 @@ class MealReviewScreen extends StatelessWidget {
               onPressed: () {
                 Navigator.of(context).pop(true);
               },
-              child: const Text('Cerrar'),
+              child:
+                  const Text('Cerrar', style: TextStyle(color: Estilos.color1)),
             ),
           ],
         );
@@ -63,7 +65,10 @@ class MealReviewScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reporte de comida'),
+        title: const Text(
+          'Reporte de comida',
+          style: TextStyle(color: Estilos.color5),
+        ),
       ),
       // ignore: deprecated_member_use
       body: WillPopScope(
@@ -82,7 +87,7 @@ class MealReviewScreen extends StatelessWidget {
                       'Informacion de la comida:',
                       style: TextStyle(
                         fontSize: 20,
-                        color: Estilos.color2,
+                        color: Estilos.color1,
                       ),
                     ),
                     Padding(
@@ -112,19 +117,25 @@ class MealReviewScreen extends StatelessWidget {
               //TODO:este boton abre un form para elegir entre sugeridos y elegidos (patch request)
               Center(
                 child: ElevatedButton(
-                    onPressed: areSuggestions()
-                        ? null
-                        : () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => SuggestedFoodScreen(
-                                  foodItems: mealReport.foodReports,
-                                ),
+                  onPressed: areSuggestions()
+                      ? null
+                      : () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => SuggestedFoodScreen(
+                                foodItems: mealReport.foodReports,
                               ),
-                            );
-                          },
-                    child: const Text('Alternativas de alimentos')),
+                            ),
+                          );
+                        },
+                  child: const Text(
+                    'Alternativas de alimentos',
+                    style: TextStyle(
+                      color: Estilos.color1,
+                    ),
+                  ),
+                ),
               )
             ],
           ),

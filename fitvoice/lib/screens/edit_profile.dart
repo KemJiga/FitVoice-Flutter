@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:fitvoice/models/healthdata_model.dart';
 import 'package:fitvoice/models/user_model.dart';
+import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 
 class EditProfile extends StatefulWidget {
@@ -172,7 +173,10 @@ class _EditProfileState extends State<EditProfile> {
                           });
                         }
                       },
-                      child: const Text('Guardar'),
+                      child: const Text(
+                        'Guardar',
+                        style: TextStyle(color: Estilos.color1),
+                      ),
                     ),
                   ],
                 ),
