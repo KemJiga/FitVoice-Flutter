@@ -16,26 +16,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      locale: const Locale('es', 'ES'),
+    return const MaterialApp(
       title: 'Fit Voice',
-      theme: ThemeData(
-        //scaffoldBackgroundColor: const Color.fromARGB(255, 22, 22, 25),
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          backgroundColor: Color.fromARGB(255, 22, 22, 25),
-          selectedItemColor: Color.fromRGBO(46, 209, 46, 1),
-          unselectedItemColor: Color.fromRGBO(26, 28, 36, 1),
-        ),
-        textTheme: const TextTheme(
-          titleMedium: TextStyle(
-            color: Color.fromRGBO(46, 209, 46, 1),
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        useMaterial3: true,
-      ),
-      home: const SplashScreen(),
+      home: SplashScreen(),
     );
   }
 }
