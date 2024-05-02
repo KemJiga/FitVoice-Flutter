@@ -30,9 +30,9 @@ class _AuthScreenState extends State<AuthScreen> {
                   ),
                 );
               },
-              child: const Text(
+              child: Text(
                 'Iniciar sesión',
-                style: TextStyle(color: Estilos.color1),
+                style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
               ),
             ),
             ElevatedButton(

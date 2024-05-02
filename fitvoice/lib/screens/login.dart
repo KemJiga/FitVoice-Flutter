@@ -1,6 +1,13 @@
+// ignore_for_file: unused_field, use_build_context_synchronously
+
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitvoice/screens/tabs_screen.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({super.key});
@@ -12,20 +19,55 @@ class LoginScreen extends StatefulWidget {
 }
 
 class _LoginScreenState extends State<LoginScreen> {
+  bool _isObscure = true;
+
   final _formLogIn = GlobalKey<FormState>();
   var _enteredEmail = '';
   var _enteredPassword = '';
 
-  //TODO: implementar inicio de sesion en firebase
-  bool _submit() {
+  void _submit() async {
     final isValid = _formLogIn.currentState!.validate();
 
-    if (isValid) {
-      _formLogIn.currentState!.save();
-      print(_enteredEmail);
-      print(_enteredPassword);
+    if (!isValid) {
+      return;
     }
-    return isValid;
+    _formLogIn.currentState!.save();
+
+    try {
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
+          email: _enteredEmail, password: _enteredPassword);
+      print('Credentials: $userCredentials');
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Inicio de sesión exitoso.'),
+        ),
+      );
+      Timer(const Duration(seconds: 2), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const TabsScreen(),
+          ),
+        );
+      });
+    } on FirebaseAuthException catch (error) {
+      var errorMessage = 'Ha ocurrido un error.';
+      if (error.code == 'user-not-found') {
+        errorMessage = 'Correo no encontrado.';
+      } else if (error.code == 'wrong-password') {
+        errorMessage = 'Contraseña incorrecta.';
+      }
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text(errorMessage),
+        ),
+      );
+    }
   }
 
   @override
@@ -80,8 +122,18 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                           TextFormField(
                             obscureText: true,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               labelText: 'Contraseña',
+                              suffixIcon: IconButton(
+                                onPressed: () {
+                                  setState(() {
+                                    _isObscure = !_isObscure;
+                                  });
+                                },
+                                icon: Icon(_isObscure
+                                    ? Icons.visibility
+                                    : Icons.visibility_off),
+                              ),
                             ),
                             validator: (value) {
                               if (value == null ||
@@ -99,17 +151,7 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 12,
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              bool valid = _submit();
-                              if (valid) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TabsScreen(),
-                                  ),
-                                );
-                              }
-                            },
+                            onPressed: _submit,
                             child: const Text(
                               'Iniciar sesión',
                               style: TextStyle(color: Estilos.color1),
