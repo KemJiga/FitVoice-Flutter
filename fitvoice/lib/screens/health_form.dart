@@ -1,9 +1,20 @@
-import 'package:fitvoice/screens/tabs_screen.dart';
-import 'package:fitvoice/utils/styles.dart';
+import 'package:flutter/services.dart';
+import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
+import 'dart:async';
+import 'dart:convert';
+
+import 'package:fitvoice/utils/styles.dart';
+import 'package:fitvoice/screens/tabs_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+
+final _firebase = FirebaseAuth.instance;
 
 class HealthFormScreen extends StatefulWidget {
-  const HealthFormScreen({super.key});
+  const HealthFormScreen(
+      {super.key, required this.email, required this.password});
+  final String email;
+  final String password;
 
   @override
   State<StatefulWidget> createState() {
@@ -15,42 +26,111 @@ enum Gender { hombre, mujer }
 
 class _HealthFormScreenState extends State<HealthFormScreen> {
   final _formHealth = GlobalKey<FormState>();
+  String? authToken;
+
+  Future<String?> login(String email, String password) async {
+    try {
+      final userCredentials = await _firebase.signInWithEmailAndPassword(
+          email: email, password: password);
+      return authToken = await userCredentials.user!.getIdToken(true);
+    } on FirebaseAuthException catch (error) {
+      return error.message;
+    }
+  }
 
   String cap(String input) {
     if (input.isEmpty) return input;
     return input[0].toUpperCase() + input.substring(1);
   }
 
-  String getGender(String gender) {
-    gender = gender.toLowerCase();
-    if (gender == 'hombre') return 'Male';
-    if (gender == 'mujer') return 'Female';
+  String getGender(Gender gender) {
+    if (gender == Gender.hombre) return 'male';
+    if (gender == Gender.mujer) return 'female';
     return '';
   }
 
   Gender _selectedGender = Gender.hombre;
+  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
   var _enteredAge = '';
   var _enteredHeight = '';
   var _enteredWeight = '';
 
-  //TODO: implementar patch de info nutricional
-  bool _submit() {
-    final isValid = _formHealth.currentState!.validate();
+  void _submit() async {
+    var URL = Uri.parse('$baseUrl/api/v1/auth/users/me/health-data');
+    authToken = await login(widget.email, widget.password);
 
-    if (isValid) {
-      _formHealth.currentState!.save();
-      print(_enteredAge);
-      print(_enteredHeight);
-      print(_enteredWeight);
-      print(_selectedGender.toString());
+    final isValid = _formHealth.currentState!.validate();
+    if (!isValid) {
+      return;
     }
-    return isValid;
+    _formHealth.currentState!.save();
+
+    String gender = getGender(_selectedGender);
+
+    var res = await http.patch(
+      URL,
+      body: {
+        'age': _enteredAge,
+        'gender': gender,
+        'height': _enteredHeight,
+        'weight': _enteredWeight,
+      },
+      headers: {'Authorization': 'Bearer $authToken'},
+    );
+
+    if (res.statusCode == 200) {
+      var jsonResponse = jsonDecode(res.body);
+      var data = jsonResponse['healthData'];
+      print(data);
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text(
+            'Registro de informacion exitoso.',
+            style: TextStyle(
+              fontFamily: 'BrandonGrotesque',
+            ),
+          ),
+        ),
+      );
+      Timer(const Duration(seconds: 2), () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => TabsScreen(
+              authToken: authToken,
+            ),
+          ),
+        );
+      });
+    } else if (res.statusCode == 400 || res.statusCode == 401) {
+      var jsonResponse = jsonDecode(res.body);
+      var errorInfo = jsonResponse['errorInfo'];
+      var errorMessage = errorInfo['message'];
+      print(errorMessage);
+
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text(
+            'Error: $errorMessage',
+            style: const TextStyle(
+              fontFamily: 'BrandonGrotesque',
+            ),
+          ),
+        ),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: const Text('Informacion personal'),
       ),
       body: Center(
@@ -99,7 +179,11 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Altura (cm)',
                             ),
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
                               if (value!.isEmpty ||
                                   int.parse(value) < 0 ||
@@ -152,17 +236,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
                             height: 12,
                           ),
                           ElevatedButton(
-                            onPressed: () {
-                              bool valid = _submit();
-                              if (valid) {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => const TabsScreen(),
-                                  ),
-                                );
-                              }
-                            },
+                            onPressed: _submit,
                             child: const Text(
                               'Iniciar sesión',
                               style: TextStyle(color: Estilos.color1),
