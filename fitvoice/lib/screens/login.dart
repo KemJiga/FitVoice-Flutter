@@ -2,10 +2,10 @@
 
 import 'dart:async';
 
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitvoice/screens/tabs_screen.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 final _firebase = FirebaseAuth.instance;
 
@@ -36,7 +36,8 @@ class _LoginScreenState extends State<LoginScreen> {
     try {
       final userCredentials = await _firebase.signInWithEmailAndPassword(
           email: _enteredEmail, password: _enteredPassword);
-      print('Credentials: $userCredentials');
+      String? authToken = await userCredentials.user!.getIdToken();
+      //print(authToken);
 
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
@@ -49,7 +50,9 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const TabsScreen(),
+            builder: (context) => TabsScreen(
+              authToken: authToken,
+            ),
           ),
         );
       });
@@ -121,7 +124,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             },
                           ),
                           TextFormField(
-                            obscureText: true,
                             decoration: InputDecoration(
                               labelText: 'Contraseña',
                               suffixIcon: IconButton(
@@ -135,11 +137,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     : Icons.visibility_off),
                               ),
                             ),
+                            obscureText: _isObscure,
                             validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty ||
-                                  value.trim().length < 6) {
-                                return 'La contraseña debe ser de al menos 6 caracteres.';
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, ingrese una contraseña.';
                               }
                               return null;
                             },
