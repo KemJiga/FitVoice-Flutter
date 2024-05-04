@@ -1,13 +1,15 @@
 // ignore_for_file: use_build_context_synchronously, unused_field, unused_catch_clause
 
+//import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
-
+import 'dart:convert';
 import 'package:fitvoice/screens/health_form.dart';
+import 'package:http/http.dart' as http;
+
 import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
-final _firebase = FirebaseAuth.instance;
+//final _firebase = FirebaseAuth.instance;
 
 class SignUpScreen extends StatefulWidget {
   const SignUpScreen({super.key});
@@ -21,51 +23,91 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isObscure = true;
 
+  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final _regexPattern =
+      RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&-_]{8,100}$');
+
   final _formSignUp = GlobalKey<FormState>();
-  var _enteredName = '';
-  var _enteredLastName = '';
-  var _enteredEmail = '';
-  var _enteredPassword = '';
+  String _enteredName = '';
+  String _enteredLastName = '';
+  String _enteredEmail = '';
+  String _enteredPassword = '';
 
   void _submit() async {
-    final isValid = _formSignUp.currentState!.validate();
+    var URL = Uri.parse('$baseUrl/api/v1/auth/users');
 
+    final isValid = _formSignUp.currentState!.validate();
     if (!isValid) {
       return;
     }
 
     _formSignUp.currentState!.save();
 
-    try {
-      await _firebase.createUserWithEmailAndPassword(
-          email: _enteredEmail, password: _enteredPassword);
+    var res = await http.post(
+      URL,
+      body: {
+        'firstName': _enteredName,
+        'lastName': _enteredLastName,
+        'email': _enteredEmail,
+        'password': _enteredPassword,
+      },
+    );
+    if (res.statusCode == 201) {
+      var jsonResponse = jsonDecode(res.body);
+      var appUser = jsonResponse['appUser'];
+      var userId = appUser['userId'];
+
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          duration: Duration(seconds: 1),
-          content: Text('Usuario creado exitosamente'),
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text(
+            'Registro exitoso. $userId',
+            style: const TextStyle(
+              fontFamily: 'BrandonGrotesque',
+            ),
+          ),
         ),
       );
       Timer(const Duration(seconds: 2), () {
         Navigator.push(
           context,
           MaterialPageRoute(
-            builder: (context) => const HealthFormScreen(),
+            builder: (context) => HealthFormScreen(
+              email: _enteredEmail,
+              password: _enteredPassword,
+            ),
           ),
         );
       });
-    } on FirebaseAuthException catch (error) {
-      var errorMessage = 'Ha ocurrido un error.';
-      if (error.code == 'weak-password') {
-        errorMessage = 'Contraseña debil.';
-      } else if (error.code == 'email-already-in-use') {
-        errorMessage = 'Ya existe un usuario con este correo.';
-      }
+    } else if (res.statusCode == 400) {
+      var jsonResponse = jsonDecode(res.body);
+      var errorInfo = jsonResponse['errorInfo'];
+      var errorMessage = errorInfo['message'];
+
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           duration: const Duration(seconds: 1),
-          content: Text(errorMessage),
+          content: Text(
+            'Error: $errorMessage',
+            style: const TextStyle(
+              fontFamily: 'BrandonGrotesque',
+            ),
+          ),
+        ),
+      );
+    } else if (res.statusCode == 409) {
+      ScaffoldMessenger.of(context).clearSnackBars();
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text(
+            'Ya existe un usuario con este correo.',
+            style: TextStyle(
+              fontFamily: 'BrandonGrotesque',
+            ),
+          ),
         ),
       );
     }
@@ -75,7 +117,12 @@ class _SignUpScreenState extends State<SignUpScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Registrarse'),
+        title: const Text(
+          'Registrarse',
+          style: TextStyle(
+            fontFamily: 'BrandonGrotesque',
+          ),
+        ),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -165,10 +212,11 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             ),
                             obscureText: _isObscure,
                             validator: (value) {
-                              if (value == null ||
-                                  value.trim().isEmpty ||
-                                  value.trim().length < 6) {
-                                return 'La contraseña debe ser de al menos 6 caracteres.';
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor, ingrese una contraseña.';
+                              }
+                              if (!_regexPattern.hasMatch(value)) {
+                                return 'La contraseña debe tener al menos 8 caracteres y una minuscula, una mayuscula, un numero y un caracter especial.';
                               }
                               return null;
                             },
@@ -183,7 +231,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                             onPressed: _submit,
                             child: const Text(
                               'Registrarse',
-                              style: TextStyle(color: Estilos.color1),
+                              style: TextStyle(
+                                color: Estilos.color1,
+                                fontFamily: 'BrandonGrotesque',
+                              ),
                             ),
                           ),
                         ],
