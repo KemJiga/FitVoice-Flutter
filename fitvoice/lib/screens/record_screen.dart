@@ -206,67 +206,68 @@ class _RecordScreenState extends State<RecordScreen> {
             ],
           ),
           const SizedBox(height: 20),
-          Column(
-            children: [
-              if (_recorded) const Text('Escucha tu grabación! ⬇️'),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  IconButton(
-                    icon: const Icon(Icons.play_arrow),
-                    onPressed: () {
-                      playSound();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.pause),
-                    onPressed: () {
-                      pauseSound();
-                    },
-                  ),
-                  IconButton(
-                    icon: const Icon(Icons.replay_outlined),
-                    onPressed: () {
-                      stopSound();
-                      setState(() {
-                        _audioPosition = Duration.zero;
-                      });
-                    },
-                  ),
-                ],
-              ),
-              Slider(
-                min: 0,
-                max: _audioDuration.inSeconds.toDouble(),
-                value: _audioPosition.inSeconds.toDouble(),
-                onChanged: (value) {
-                  seekSound(value.toInt());
-                },
-                activeColor: Estilos.color1,
-              ),
-              Text(
-                  '${formatTime((_audioDuration - _audioPosition).inSeconds)}s'),
-              const SizedBox(height: 30),
-              ElevatedButton(
-                onPressed: () {
-                  //TODO: Enviar audio al servidor
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      duration: Duration(seconds: 1),
-                      content: Text('Audio enviado a s2n ✅'),
+          if (_recorded)
+            Column(
+              children: [
+                const Text('Escucha tu grabación! ⬇️'),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    IconButton(
+                      icon: const Icon(Icons.play_arrow),
+                      onPressed: () {
+                        playSound();
+                      },
                     ),
-                  );
-                  Timer(const Duration(seconds: 2), () {
-                    //Navigator.pop(context);
-                  });
-                },
-                child: const Text(
-                  'Enviar grabación',
-                  style: TextStyle(color: Estilos.color1),
+                    IconButton(
+                      icon: const Icon(Icons.pause),
+                      onPressed: () {
+                        pauseSound();
+                      },
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.replay_outlined),
+                      onPressed: () {
+                        stopSound();
+                        setState(() {
+                          _audioPosition = Duration.zero;
+                        });
+                      },
+                    ),
+                  ],
                 ),
-              ),
-            ],
-          ),
+                Slider(
+                  min: 0,
+                  max: _audioDuration.inSeconds.toDouble(),
+                  value: _audioPosition.inSeconds.toDouble(),
+                  onChanged: (value) {
+                    seekSound(value.toInt());
+                  },
+                  activeColor: Estilos.color1,
+                ),
+                Text(
+                    '${formatTime((_audioDuration - _audioPosition).inSeconds)}s'),
+                const SizedBox(height: 30),
+                ElevatedButton(
+                  onPressed: () {
+                    //TODO: Enviar audio al servidor
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                        duration: Duration(seconds: 1),
+                        content: Text('Audio enviado a s2n ✅'),
+                      ),
+                    );
+                    Timer(const Duration(seconds: 2), () {
+                      //Navigator.pop(context);
+                    });
+                  },
+                  child: const Text(
+                    'Enviar grabación',
+                    style: TextStyle(color: Estilos.color1),
+                  ),
+                ),
+              ],
+            ),
           const SizedBox(height: 50),
         ],
       ),
