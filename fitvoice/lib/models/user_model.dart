@@ -5,13 +5,13 @@ class UserModel {
     required this.firstName,
     required this.lastName,
     required this.email,
-    required this.password,
-    required this.healthData,
+    required this.createdAt,
+    this.healthData,
   });
 
   String firstName;
   String lastName;
   String email;
-  String password;
+  DateTime createdAt;
   HealthData? healthData;
 }
