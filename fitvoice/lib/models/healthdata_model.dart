@@ -1,5 +1,3 @@
-enum Gender { hombre, mujer }
-
 class HealthData {
   HealthData({
     required this.age,
@@ -8,8 +6,8 @@ class HealthData {
     required this.gender,
   });
 
-  int age;
-  int height;
+  double age;
+  double height;
   double weight;
-  Gender gender;
+  String gender;
 }
