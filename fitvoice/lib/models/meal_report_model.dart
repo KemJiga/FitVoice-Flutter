@@ -1,7 +1,9 @@
 import 'package:fitvoice/models/food_items_model.dart';
+import 'package:fitvoice/models/user_report_model.dart';
 
 class MealReportModel {
   MealReportModel({
+    required this.userReport,
     required this.id,
     required this.appUserId,
     required this.audioId,
@@ -10,15 +12,15 @@ class MealReportModel {
     required this.dbLookupPreference,
     required this.mealRecordedAt,
     required this.pending,
-    required this.reviewed,
   });
+
   String id;
   String appUserId;
   String audioId;
   String rawTranscript;
-  List<FoodItemsModel> foodReports;
+  UserReportModel userReport;
+  FoodItemsModel foodReports;
   String dbLookupPreference;
   DateTime mealRecordedAt;
   bool pending;
-  bool reviewed;
 }
