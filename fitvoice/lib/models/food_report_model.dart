@@ -1,23 +1,19 @@
+import 'package:fitvoice/models/food_model.dart';
+
 class FoodReportModel {
   const FoodReportModel({
     required this.id,
-    required this.foodName,
-    required this.description,
+    required this.food,
+    required this.score,
     required this.amount,
-    required this.unit,
-    required this.protein,
-    required this.fat,
-    required this.carbs,
-    required this.calories,
+    required this.unitWasTransformed,
+    required this.amountByUser,
   });
 
   final String id;
-  final String foodName;
-  final String description;
+  final FoodModel food;
+  final double score;
   final double amount;
-  final String unit;
-  final int protein;
-  final int fat;
-  final int carbs;
-  final int calories;
+  final bool unitWasTransformed;
+  final bool amountByUser;
 }
