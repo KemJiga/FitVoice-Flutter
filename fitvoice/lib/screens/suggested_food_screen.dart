@@ -44,7 +44,11 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
             const Padding(
               padding: EdgeInsets.all(8.0),
               child: Text(
-                  'Si la IA no comprendio el alimento que mencionaste, puedes ver algunas sugerencias de cambio aqui:'),
+                'Si la IA no comprendio el alimento que mencionaste, puedes ver algunas sugerencias de cambio aqui:',
+                style: TextStyle(
+                  fontFamily: 'BrandonGrotesque',
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
@@ -54,10 +58,20 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                   children: [
                     for (var i = 0; i < length; i++)
                       CheckboxListTile(
-                        title:
-                            Text(widget.suggestions[i].suggestions[0].foodName),
+                        title: Text(
+                          //widget.suggestions[i].suggestions[0].foodName,
+                          'si',
+                          style: const TextStyle(
+                            fontFamily: 'BrandonGrotesque',
+                          ),
+                        ),
                         subtitle: Text(
-                            "A cambio de: ${widget.suggestions[i].foodFoodItem.foodName}"),
+                          //"A cambio de: ${widget.suggestions[i].foodFoundItem.foodName}",
+                          'si',
+                          style: const TextStyle(
+                            fontFamily: 'BrandonGrotesque',
+                          ),
+                        ),
                         value: areChecked[i],
                         onChanged: (bool? value) {
                           setState(() {
@@ -75,7 +89,12 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                           ScaffoldMessenger.of(context).showSnackBar(
                             const SnackBar(
                               duration: Duration(seconds: 1),
-                              content: Text('Alimentos actualizados ✅'),
+                              content: Text(
+                                'Alimentos actualizados ✅',
+                                style: TextStyle(
+                                  fontFamily: 'BrandonGrotesque',
+                                ),
+                              ),
                             ),
                           );
                           Timer(const Duration(seconds: 2), () {
@@ -83,7 +102,12 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                           });
                         }
                       },
-                      child: const Text('Actualizar'),
+                      child: const Text(
+                        'Actualizar',
+                        style: TextStyle(
+                          fontFamily: 'BrandonGrotesque',
+                        ),
+                      ),
                     ),
                   ],
                 ),

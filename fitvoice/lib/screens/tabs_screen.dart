@@ -1,30 +1,20 @@
-import 'package:fitvoice/dummydata.dart';
-import 'package:fitvoice/models/meal_report_model.dart';
-import 'package:fitvoice/models/user_model.dart';
+// import 'package:fitvoice/models/healthdata_model.dart';
+// import 'package:fitvoice/models/meal_report_model.dart';
+// import 'package:fitvoice/models/user_model.dart';
 import 'package:fitvoice/screens/dashboard_screen.dart';
 import 'package:fitvoice/screens/database_screen.dart';
 import 'package:fitvoice/screens/meal_reports_screen.dart';
 import 'package:fitvoice/screens/profile_screen.dart';
 import 'package:fitvoice/screens/record_screen.dart';
 import 'package:fitvoice/utils/styles.dart';
-import 'package:fitvoice/widgets/meal_report.dart';
+//import 'package:fitvoice/widgets/meal_report.dart';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 class TabsScreen extends StatefulWidget {
-  const TabsScreen({super.key});
-
-  String getDate() {
-    final String locale = Intl.getCurrentLocale();
-    DateTime now = DateTime.now();
-    String formattedDate = DateFormat('MMMM d, EEEE', locale).format(now);
-    return formattedDate;
-  }
-
-  List<MealReportModel> fetchReports() {
-    return dummyData;
-  }
+  const TabsScreen({super.key, required this.authToken});
+  final String? authToken;
 
   @override
   State<StatefulWidget> createState() {
@@ -34,7 +24,13 @@ class TabsScreen extends StatefulWidget {
 
 class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 2;
-  UserModel user = dummyUser;
+
+  String getDate() {
+    final String locale = Intl.getCurrentLocale();
+    DateTime now = DateTime.now();
+    String formattedDate = DateFormat('MMMM d, EEEE', locale).format(now);
+    return formattedDate;
+  }
 
   void _selectPage(int index) {
     setState(() {
@@ -44,29 +40,29 @@ class _TabsScreenState extends State<TabsScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Widget activePage = const RecordScreen();
-
-    var date = widget.getDate();
-    var data = widget.fetchReports();
-    var dataCards = data.map((e) => MealReportCard(mealReport: e)).toList();
+    Widget activePage = RecordScreen(
+      authToken: widget.authToken!,
+    );
+    var date = getDate();
+    //var data = fetchReports();
+    //var dataCards = data.map((e) => MealReportCard(mealReport: e)).toList();
 
     var activePagename = "Grabar";
+    //TODO: entregar el authtoken y hacer que cada pantalla se encargue de sus datos
     switch (_selectedPageIndex) {
       case 0:
-        activePage = DashboardScreen(
-          reports: data,
-        );
+        activePage = DashboardScreen(authToken: widget.authToken!);
         activePagename = "Principal";
         break;
       case 1:
         activePage = ReportsScreen(
-            changePage: _selectPage,
-            pendingReports: dataCards,
-            readedReports: []);
+          changePage: _selectPage,
+          authToken: widget.authToken!,
+        );
         activePagename = "Reportes";
         break;
       case 2:
-        activePage = const RecordScreen();
+        activePage = RecordScreen(authToken: widget.authToken!);
         activePagename = "Grabar";
         break;
       case 3:
@@ -74,9 +70,7 @@ class _TabsScreenState extends State<TabsScreen> {
         activePagename = "Datos";
         break;
       case 4:
-        activePage = ProfileScreen(
-          user: user,
-        );
+        activePage = ProfileScreen(authToken: widget.authToken!);
         activePagename = "Perfil";
         break;
     }
@@ -90,18 +84,11 @@ class _TabsScreenState extends State<TabsScreen> {
             children: [
               Text(
                 activePagename,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  color: Estilos.color5,
-                ),
+                style: Estilos.textStyle1(14, Estilos.color5, 'bold'),
               ),
               Text(
                 date,
-                style: const TextStyle(
-                  fontSize: 12,
-                  fontWeight: FontWeight.w400,
-                  color: Estilos.color5,
-                ),
+                style: Estilos.textStyle1(12, Estilos.color5, 'bold'),
               ),
             ],
           ),
@@ -110,6 +97,7 @@ class _TabsScreenState extends State<TabsScreen> {
       body: activePage,
       bottomNavigationBar: BottomNavigationBar(
         selectedItemColor: Estilos.color1,
+        unselectedItemColor: Estilos.color5,
         onTap: _selectPage,
         currentIndex: _selectedPageIndex,
         items: const [

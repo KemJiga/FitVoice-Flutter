@@ -1,3 +1,5 @@
+// ignore_for_file: non_constant_identifier_names, avoid_print, use_build_context_synchronously
+
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -32,7 +34,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
     try {
       final userCredentials = await _firebase.signInWithEmailAndPassword(
           email: email, password: password);
-      return authToken = await userCredentials.user!.getIdToken(true);
+      return await userCredentials.user!.getIdToken(true);
     } on FirebaseAuthException catch (error) {
       return error.message;
     }
@@ -100,7 +102,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => TabsScreen(
-              authToken: authToken,
+              authToken: authToken!,
             ),
           ),
         );
@@ -162,7 +164,11 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
                             decoration: const InputDecoration(
                               labelText: 'Edad',
                             ),
-                            keyboardType: TextInputType.number,
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
                             validator: (value) {
                               if (value!.isEmpty ||
                                   int.parse(value) < 0 ||

@@ -4,6 +4,9 @@ import 'dart:async';
 import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
+import 'dart:convert';
+import 'package:http/http.dart' as http;
+import 'package:http_parser/http_parser.dart';
 
 import 'package:audioplayers/audioplayers.dart';
 import 'package:fitvoice/utils/styles.dart';
@@ -14,8 +17,9 @@ import 'package:record/record.dart';
 import 'package:flutter/material.dart';
 
 class RecordScreen extends StatefulWidget {
-  const RecordScreen({super.key});
+  const RecordScreen({super.key, required this.authToken});
 
+  final String? authToken;
   @override
   State<StatefulWidget> createState() {
     return _RecordScreenState();
@@ -42,21 +46,27 @@ class _RecordScreenState extends State<RecordScreen> {
     super.initState();
 
     player.onPlayerStateChanged.listen((state) {
-      setState(() {
-        _isPlaying = state == PlayerState.playing;
-      });
+      if (mounted) {
+        setState(() {
+          _isPlaying = state == PlayerState.playing;
+        });
+      }
     });
 
     player.onDurationChanged.listen((newDuration) {
-      setState(() {
-        _audioDuration = newDuration;
-      });
+      if (mounted) {
+        setState(() {
+          _audioDuration = newDuration;
+        });
+      }
     });
 
     player.onPositionChanged.listen((newPosition) {
-      setState(() {
-        _audioPosition = newPosition;
-      });
+      if (mounted) {
+        setState(() {
+          _audioPosition = newPosition;
+        });
+      }
     });
   }
 
@@ -102,9 +112,12 @@ class _RecordScreenState extends State<RecordScreen> {
 
   Future<void> _stopRecording() async {
     final path = await _record.stop();
+    //_audioPath = '${path!.substring(0, path.length - 4)}.mp3';
+    //final mp3Path = await convertToMp3(path);
     _audioPath = path;
+    //await File(path).rename(_audioPath!);
     if (_audioPath?.isNotEmpty ?? false) {
-      log(path!);
+      print(path);
     }
     if (mounted) {
       setState(() {
@@ -118,6 +131,7 @@ class _RecordScreenState extends State<RecordScreen> {
   Future<void> playSound() async {
     //String sourcePath = 'sounds/record.mp3';
     String sourcePath = _audioPath!;
+    print(sourcePath);
     try {
       //await player.play(AssetSource(sourcePath));
       await player.play(DeviceFileSource(sourcePath)).then(
@@ -155,6 +169,53 @@ class _RecordScreenState extends State<RecordScreen> {
     _timer?.cancel();
     _record.dispose();
     await player.dispose();
+  }
+
+  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  bool sent = false;
+  Future<bool> uploadAudio() async {
+    var URL = Uri.parse('$baseUrl/api/v1/foodlog/report/upload');
+
+    var request = http.MultipartRequest('POST', URL);
+    request.files.add(await http.MultipartFile.fromPath('file', _audioPath!,
+        contentType: MediaType('audio', 'm4a')));
+    request.headers.addAll({"Authorization": 'Bearer ${widget.authToken}'});
+
+    var res = await request.send();
+
+    if (res.statusCode == 201) {
+      var resData = await res.stream.bytesToString();
+      var jsonResponse = jsonDecode(resData);
+      print(jsonResponse['message']);
+      print(jsonResponse['body']);
+
+      sent = true;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          duration: Duration(seconds: 1),
+          content: Text('Audio enviado a s2n ✅'),
+        ),
+      );
+      Timer(const Duration(seconds: 2), () {});
+
+      return true;
+    } else if (res.statusCode == 422) {
+      sent = true;
+      return false;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          duration: const Duration(seconds: 1),
+          content: Text('Error al enviar audio ❌ : ${res.statusCode}'),
+        ),
+      );
+      Timer(const Duration(seconds: 2), () {
+        //Navigator.pop(context);
+      });
+      sent = false;
+      return false;
+    }
   }
 
   @override
@@ -249,18 +310,7 @@ class _RecordScreenState extends State<RecordScreen> {
                     '${formatTime((_audioDuration - _audioPosition).inSeconds)}s'),
                 const SizedBox(height: 30),
                 ElevatedButton(
-                  onPressed: () {
-                    //TODO: Enviar audio al servidor
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(
-                        duration: Duration(seconds: 1),
-                        content: Text('Audio enviado a s2n ✅'),
-                      ),
-                    );
-                    Timer(const Duration(seconds: 2), () {
-                      //Navigator.pop(context);
-                    });
-                  },
+                  onPressed: uploadAudio,
                   child: const Text(
                     'Enviar grabación',
                     style: TextStyle(color: Estilos.color1),

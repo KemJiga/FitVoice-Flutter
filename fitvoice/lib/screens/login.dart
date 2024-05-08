@@ -51,7 +51,7 @@ class _LoginScreenState extends State<LoginScreen> {
           context,
           MaterialPageRoute(
             builder: (context) => TabsScreen(
-              authToken: authToken,
+              authToken: authToken!,
             ),
           ),
         );
