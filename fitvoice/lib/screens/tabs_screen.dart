@@ -75,53 +75,57 @@ class _TabsScreenState extends State<TabsScreen> {
         break;
     }
 
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        toolbarHeight: MediaQuery.of(context).size.height * 0.1,
-        title: Center(
-          child: Column(
-            children: [
-              Text(
-                activePagename,
-                style: Estilos.textStyle1(14, Estilos.color5, 'bold'),
-              ),
-              Text(
-                date,
-                style: Estilos.textStyle1(12, Estilos.color5, 'bold'),
-              ),
-            ],
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+          title: Center(
+            child: Column(
+              children: [
+                Text(
+                  activePagename,
+                  style: Estilos.textStyle1(14, Estilos.color5, 'bold'),
+                ),
+                Text(
+                  date,
+                  style: Estilos.textStyle1(12, Estilos.color5, 'bold'),
+                ),
+              ],
+            ),
           ),
         ),
-      ),
-      body: activePage,
-      bottomNavigationBar: BottomNavigationBar(
-        selectedItemColor: Estilos.color1,
-        unselectedItemColor: Estilos.color5,
-        onTap: _selectPage,
-        currentIndex: _selectedPageIndex,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.dashboard),
-            label: 'Principal',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.class_outlined),
-            label: 'Reportes',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.mic_none_outlined),
-            label: 'Grabar',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.description_outlined),
-            label: 'Datos',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person_outline_rounded),
-            label: 'Perfil',
-          ),
-        ],
+        body: activePage,
+        bottomNavigationBar: BottomNavigationBar(
+          selectedLabelStyle: const TextStyle(fontFamily: 'BrandonGrotesque'),
+          selectedItemColor: Estilos.color1,
+          unselectedItemColor: Estilos.color5,
+          onTap: _selectPage,
+          currentIndex: _selectedPageIndex,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.dashboard),
+              label: 'Principal',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.class_outlined),
+              label: 'Reportes',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.mic_none_outlined),
+              label: 'Grabar',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.description_outlined),
+              label: 'Datos',
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.person_outline_rounded),
+              label: 'Perfil',
+            ),
+          ],
+        ),
       ),
     );
   }
