@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:fitvoice/models/user_model.dart';
@@ -26,6 +25,10 @@ enum Gender { hombre, mujer }
 class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
   final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+
+  final String ffamily = 'BrandonGrotesque';
+  final double fsize = 20;
+  final Color fcolor = Colors.black;
 
   Gender _selectedGender = Gender.hombre;
   String _enteredName = '';
@@ -154,156 +157,191 @@ class _EditProfileState extends State<EditProfile> {
       ),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 12, right: 12),
+          padding:
+              const EdgeInsets.only(left: 12, right: 12, top: 8, bottom: 8),
           child: Form(
             key: _formKey,
-            child: Center(
-              child: Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Nombre',
-                      ),
-                      initialValue: widget.user.firstName,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor ingrese un nombre valido';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredName = value!;
-                      },
+            child: SizedBox(
+              child: Card(
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelStyle:
+                                  Estilos.textStyle1(fsize, fcolor, 'normal'),
+                              labelText: 'Nombre',
+                            ),
+                            style: Estilos.textStyle1(fsize, fcolor, 'normal'),
+                            initialValue: widget.user.firstName,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor ingrese un nombre valido';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredName = value!;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextFormField(
+                            decoration: InputDecoration(
+                              labelStyle:
+                                  Estilos.textStyle1(fsize, fcolor, 'normal'),
+                              labelText: 'Apellido',
+                            ),
+                            style: Estilos.textStyle1(fsize, fcolor, 'normal'),
+                            initialValue: widget.user.lastName,
+                            validator: (value) {
+                              if (value == null || value.trim().isEmpty) {
+                                return 'Por favor ingrese un apellido valido';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredLastName = value!;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextFormField(
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              labelStyle:
+                                  Estilos.textStyle1(fsize, fcolor, 'normal'),
+                              labelText: 'Edad',
+                            ),
+                            style: Estilos.textStyle1(fsize, fcolor, 'normal'),
+                            initialValue: widget.user.healthData!.age
+                                .toString()
+                                .substring(
+                                    0,
+                                    widget.user.healthData!.age
+                                            .toString()
+                                            .length -
+                                        2),
+                            validator: (value) {
+                              if (value!.isEmpty ||
+                                  int.parse(value) < 0 ||
+                                  int.parse(value) > 100) {
+                                return 'Por favor ingrese una edad valida';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredAge = value!;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: DropdownButtonFormField<String>(
+                              value: _selectedGender.toString(),
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  _selectedGender = Gender.values.firstWhere(
+                                      (element) =>
+                                          element.toString() == newValue);
+                                });
+                              },
+                              items: Gender.values
+                                  .map((e) => DropdownMenuItem(
+                                        value: e.toString(),
+                                        child: Text(
+                                          cap(e.toString().split('.').last),
+                                          style: const TextStyle(
+                                            color:
+                                                Color.fromARGB(255, 81, 81, 81),
+                                          ),
+                                        ),
+                                      ))
+                                  .toList()),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextFormField(
+                            keyboardType: const TextInputType.numberWithOptions(
+                                decimal: false),
+                            inputFormatters: [
+                              FilteringTextInputFormatter.digitsOnly
+                            ],
+                            decoration: InputDecoration(
+                              labelStyle:
+                                  Estilos.textStyle1(fsize, fcolor, 'normal'),
+                              labelText: 'Altura (cm)',
+                            ),
+                            style: Estilos.textStyle1(fsize, fcolor, 'normal'),
+                            initialValue: widget.user.healthData!.height
+                                .toString()
+                                .substring(
+                                    0,
+                                    widget.user.healthData!.height
+                                            .toString()
+                                            .length -
+                                        2),
+                            validator: (value) {
+                              if (value!.isEmpty ||
+                                  int.parse(value) < 0 ||
+                                  int.parse(value) > 250) {
+                                return 'Por favor ingrese una altura valida.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredHeight = value!;
+                            },
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: TextFormField(
+                            keyboardType: TextInputType.number,
+                            decoration: InputDecoration(
+                              labelStyle:
+                                  Estilos.textStyle1(fsize, fcolor, 'normal'),
+                              labelText: 'Peso',
+                            ),
+                            style: Estilos.textStyle1(fsize, fcolor, 'normal'),
+                            initialValue:
+                                widget.user.healthData!.weight.toString(),
+                            validator: (value) {
+                              if (value!.isEmpty || double.parse(value) < 0) {
+                                return 'Por favor ingrese su peso.';
+                              }
+                              return null;
+                            },
+                            onSaved: (value) {
+                              _enteredWeight = value!;
+                            },
+                          ),
+                        ),
+                        const SizedBox(
+                          height: 20,
+                        ),
+                        ElevatedButton(
+                          onPressed: _submit,
+                          child: Text(
+                            'Guardar',
+                            style: Estilos.textStyle1(
+                                16, Estilos.color1, 'normal'),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      decoration: const InputDecoration(
-                        labelText: 'Apellido',
-                      ),
-                      initialValue: widget.user.lastName,
-                      validator: (value) {
-                        if (value == null || value.trim().isEmpty) {
-                          return 'Por favor ingrese un apellido valido';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredLastName = value!;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        labelText: 'Edad',
-                      ),
-                      initialValue: widget.user.healthData!.age
-                          .toString()
-                          .substring(
-                              0,
-                              widget.user.healthData!.age.toString().length -
-                                  2),
-                      validator: (value) {
-                        if (value!.isEmpty ||
-                            int.parse(value) < 0 ||
-                            int.parse(value) > 100) {
-                          return 'Por favor ingrese una edad valida';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredAge = value!;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: DropdownButtonFormField<String>(
-                        value: _selectedGender.toString(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            _selectedGender = Gender.values.firstWhere(
-                                (element) => element.toString() == newValue);
-                          });
-                        },
-                        items: Gender.values
-                            .map((e) => DropdownMenuItem(
-                                  value: e.toString(),
-                                  child: Text(
-                                    cap(e.toString().split('.').last),
-                                    style: const TextStyle(
-                                      color: Color.fromARGB(255, 81, 81, 81),
-                                    ),
-                                  ),
-                                ))
-                            .toList()),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      keyboardType:
-                          const TextInputType.numberWithOptions(decimal: false),
-                      inputFormatters: [FilteringTextInputFormatter.digitsOnly],
-                      decoration: const InputDecoration(
-                        labelText: 'Altura (cm)',
-                      ),
-                      initialValue: widget.user.healthData!.height
-                          .toString()
-                          .substring(
-                              0,
-                              widget.user.healthData!.height.toString().length -
-                                  2),
-                      validator: (value) {
-                        if (value!.isEmpty ||
-                            int.parse(value) < 0 ||
-                            int.parse(value) > 250) {
-                          return 'Por favor ingrese una altura valida.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredHeight = value!;
-                      },
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: TextFormField(
-                      keyboardType: TextInputType.number,
-                      decoration: const InputDecoration(
-                        labelText: 'Peso',
-                      ),
-                      initialValue: widget.user.healthData!.weight.toString(),
-                      validator: (value) {
-                        if (value!.isEmpty || double.parse(value) < 0) {
-                          return 'Por favor ingrese su peso.';
-                        }
-                        return null;
-                      },
-                      onSaved: (value) {
-                        _enteredWeight = value!;
-                      },
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    onPressed: _submit,
-                    child: const Text(
-                      'Guardar',
-                      style: TextStyle(color: Estilos.color1),
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
           ),
