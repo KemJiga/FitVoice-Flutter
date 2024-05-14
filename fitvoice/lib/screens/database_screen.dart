@@ -1,3 +1,4 @@
+import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 
 class DatabaseScreen extends StatelessWidget {
@@ -5,8 +6,9 @@ class DatabaseScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Coming soon'),
+    return Center(
+      child: Text('Proximamente...',
+          style: Estilos.textStyle1(30, Estilos.color5, 'bold')),
     );
   }
 }
