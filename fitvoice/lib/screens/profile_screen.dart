@@ -9,7 +9,7 @@ import 'package:http/http.dart' as http;
 
 // ignore: must_be_immutable
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({super.key, required this.authToken});
+  const ProfileScreen({super.key, required this.authToken});
   final String? authToken;
 
   @override
@@ -98,9 +98,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     'Nombre: ${user.firstName}',
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BrandonGrotesque'),
                   ),
                 ),
                 Padding(
@@ -108,9 +108,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     'Apellido: ${user.lastName}',
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BrandonGrotesque'),
                   ),
                 ),
                 Padding(
@@ -118,9 +118,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   child: Text(
                     'E-mail: ${user.email}',
                     style: const TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'BrandonGrotesque'),
                   ),
                 ),
                 const SizedBox(
@@ -140,9 +140,23 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       getUserInfo();
                     });
                   },
-                  child: const Text('Editar perfil',
-                      style: TextStyle(color: Estilos.color1)),
+                  child: Text(
+                    'Editar perfil',
+                    style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
+                  ),
                 ),
+                const SizedBox(
+                  height: 10,
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.popUntil(context, (route) => route.isFirst);
+                  },
+                  child: Text(
+                    'Cerrar sesion',
+                    style: Estilos.textStyle1(16, Estilos.color4, 'normal'),
+                  ),
+                )
               ],
             ),
           );
