@@ -7,12 +7,14 @@ class ListOfMealReports extends StatelessWidget {
   final List<MealReportCard> newMealReports;
   final void Function(int) changePage;
   final List<MealReportCard> readedReports;
+  final void Function() callback;
 
   const ListOfMealReports({
     super.key,
     required this.newMealReports,
     required this.changePage,
     required this.readedReports,
+    required this.callback,
   });
 
   @override
@@ -30,6 +32,7 @@ class ListOfMealReports extends StatelessWidget {
                       style: TextStyle(
                         fontSize: 30,
                         fontWeight: FontWeight.bold,
+                        fontFamily: 'BrandonGrotesque',
                       ),
                     ),
                     const SizedBox(height: 16),
@@ -40,6 +43,7 @@ class ListOfMealReports extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 16,
                           color: Estilos.color1,
+                          fontFamily: 'BrandonGrotesque',
                         ),
                       ),
                     ),
@@ -52,26 +56,24 @@ class ListOfMealReports extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (newMealReports.isNotEmpty)
-                const Text(
-                  'Nuevos reportes',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Estilos.color1,
-                  ),
-                ),
+                Text('Nuevos reportes',
+                    style: Estilos.textStyle1(20, Estilos.color1, 'bold')),
               if (newMealReports.isNotEmpty)
                 ReportList(reports: newMealReports),
               if (readedReports.isNotEmpty)
-                const Text(
-                  'Reportes leidos',
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: 20,
-                    color: Estilos.color2,
+                Text('Reportes leidos',
+                    style: Estilos.textStyle1(20, Estilos.color3, 'bold')),
+              if (readedReports.isNotEmpty) ReportList(reports: readedReports),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => callback(),
+                  child: Text(
+                    'Actualizar',
+                    style: Estilos.textStyle1(18, Estilos.color1, 'normal'),
                   ),
                 ),
-              if (readedReports.isNotEmpty) ReportList(reports: readedReports),
+              ),
             ],
           );
   }
