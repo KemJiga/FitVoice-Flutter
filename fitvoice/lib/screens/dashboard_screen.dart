@@ -1,21 +1,28 @@
 import 'package:fitvoice/models/food_items_model.dart';
 import 'package:fitvoice/models/food_model.dart';
 import 'package:fitvoice/models/food_report_model.dart';
+import 'package:fitvoice/models/meal_model.dart';
 import 'package:fitvoice/models/meal_report_model.dart';
 import 'package:fitvoice/models/user_report_model.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:fitvoice/widgets/today_reports.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 
+// ignore: must_be_immutable
 class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({super.key, required this.authToken});
+  DashboardScreen({super.key, required this.authToken});
 
   final String? authToken;
+  int protein = 0;
+  int fat = 0;
+  int carbs = 0;
+  int calories = 0;
 
   @override
   State<StatefulWidget> createState() {
@@ -28,206 +35,290 @@ class _DashboardScreenState extends State<DashboardScreen> {
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
 
-  Future<List<MealReportCard>> getReports() async {
-    List<MealReportCard> mealReportCards = [];
-    // var queryParams = {
-    //   'fetchFoodReports': true,
-    // };
-    // var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr')
-    //     .replace(queryParameters: queryParams);
-    var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr');
+  Future<List<MealReportCard>> getDisplayableReports() async {
+    var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr?fetchFoodReports=true');
+
     var res = await http.get(URL, headers: {
       'Authorization': 'Bearer ${widget.authToken}',
     });
-
+    double proteinAux = 0;
+    double fatAux = 0;
+    double carbsAux = 0;
+    double caloriesAux = 0;
     if (res.statusCode == 200) {
       var jsonResponse = jsonDecode(res.body);
+      List<MealReportModel> meals = [];
       for (var report in jsonResponse) {
-        var mealId = report['id'];
-        var appUserId = report['appUserId'];
-        var audioId = report['audioId'];
-        var rawTranscript = report['rawTranscript'];
+        String mealId = report['id'];
+        String appUserId = report['appUserId'];
+        String audioId = report['audioId'];
+        String rawTranscript = report['rawTranscript'];
+        DateTime mealRecordedAt = DateTime.parse(report['mealRecordedAt']);
+
+        if (mealRecordedAt.isBefore(today)) {
+          continue;
+        }
 
         // Informacion entendida por el backend
         var foodReports = report['foodReports'];
-        //var foundFoodId = foodReports['id'];
 
-        var userReport = foodReports['userReport'];
-        var foodName = userReport['foodName'];
-        var foodDescription = userReport['description'];
-        var foodAmount = userReport['amount'];
-        var foodUnit = userReport['unit'];
+        List<MealModel> foodItems = [];
+        if (foodReports != null) {
+          for (var foodReport in foodReports) {
+            // Id del alimento
+            String foodReportId = foodReport['id'];
 
-        UserReportModel userReportModel = UserReportModel(
-          foodName: foodName,
-          description: foodDescription,
-          amount: foodAmount,
-          unit: foodUnit,
-        );
+            // Informacion del alimento reportado por el usuario
+            var userReport = foodReport['userReport'];
+            String foodName = userReport['foodName'];
+            List<String> foodDescription = [];
+            for (var description in userReport['description']) {
+              foodDescription.add(description);
+            }
+            double foodAmount = userReport['amount'] is int
+                ? (userReport['amount'] as int).toDouble()
+                : userReport['amount'];
+            String foodUnit = userReport['unit'];
 
-        // Informacion de la comida mas cercana a lo reportado
+            UserReportModel userReportModel = UserReportModel(
+              foodName: foodName,
+              description: foodDescription,
+              amount: foodAmount,
+              unit: foodUnit,
+            );
 
-        var systemResult = foodReports['systemResult'];
+            // Informacion de la comida mas cercana a lo reportado
 
-        var foundFoodItem = systemResult['foundFoodItem'];
-        var foodItemId = foundFoodItem['id'];
-        var score = foundFoodItem['score'];
-        var amount = foundFoodItem['amount'];
-        var unitWasTransformed = foundFoodItem['unitWasTransformed'];
-        var amountByUser = foundFoodItem['amountByUser'];
+            var systemResult = foodReport['systemResult'];
 
-        var food = foundFoodItem['food'];
-        var foodId = food['id'];
-        var foundFoodName = food['foodName'];
-        var otherNames = food['otherNames'];
-        var foundFoodDescription = food['description'];
-        var portionSize = food['portionSize'];
-        var portionSizeUnit = food['portionSizeUnit'];
-        var servingSize = food['servingSize'];
-        var servingSizeUnit = food['servingSizeUnit'];
-        var foodSource = food['foodSource'];
-        var calories = food['calories'];
-        var protein = food['protein'];
-        var fat = food['fat'];
-        var carbohydrates = food['carbohydrates'];
+            var foundFoodItem = systemResult['foundFoodItem'];
+            late FoodReportModel foundFoodItemModel;
+            var hasItems = foundFoodItem != null;
+            if (foundFoodItem != null) {
+              String foodItemId = foundFoodItem['id'];
+              double score = foundFoodItem['score'] is int
+                  ? (foundFoodItem['score'] as int).toDouble()
+                  : foundFoodItem['score'];
+              double amount = foundFoodItem['amount'] is int
+                  ? (foundFoodItem['amount'] as int).toDouble()
+                  : foundFoodItem['amount'];
+              bool unitWasTransformed = foundFoodItem['unitWasTransformed']
+                      .toString()
+                      .toLowerCase() ==
+                  'true';
+              bool amountByUser =
+                  foundFoodItem['amountByUser'].toString().toLowerCase() ==
+                      'true';
 
-        FoodModel foundFoodModel = FoodModel(
-          id: foodId,
-          foodName: foundFoodName,
-          otherNames: otherNames,
-          description: foundFoodDescription,
-          portionSize: portionSize,
-          portionSizeUnit: portionSizeUnit,
-          servingSize: servingSize,
-          servingSizeUnit: servingSizeUnit,
-          foodSource: foodSource,
-          calories: calories,
-          protein: protein,
-          fat: fat,
-          carbohydrates: carbohydrates,
-        );
+              var food = foundFoodItem['food'];
+              String foodId = food['id'];
+              String foundFoodName = food['foodName'];
+              List<String> otherNames = [];
+              for (var otherName in food['otherNames']) {
+                otherNames.add(otherName);
+              }
+              List<String> foundFoodDescription = [];
+              for (var description in food['description']) {
+                foundFoodDescription.add(description);
+              }
+              double portionSize = food['portionSize'] is int
+                  ? (food['portionSize'] as int).toDouble()
+                  : food['portionSize'];
+              String portionSizeUnit = food['portionSizeUnit'];
+              double servingSize = food['servingSize'] is int
+                  ? (food['servingSize'] as int).toDouble()
+                  : food['servingSize'];
+              String servingSizeUnit = food['servingSizeUnit'];
+              String foodSource = food['foodSource'];
+              double calories = food['calories'] is int
+                  ? (food['calories'] as int).toDouble()
+                  : food['calories'];
+              double protein = food['protein'] is int
+                  ? (food['protein'] as int).toDouble()
+                  : food['protein'];
+              double fat = food['fat'] is int
+                  ? (food['fat'] as int).toDouble()
+                  : food['fat'];
+              double carbohydrates = food['carbohydrates'] is int
+                  ? (food['carbohydrates'] as int).toDouble()
+                  : food['carbohydrates'];
 
-        FoodReportModel foundFoodItemModel = FoodReportModel(
-          id: foodItemId,
-          food: foundFoodModel,
-          score: score,
-          amount: amount,
-          unitWasTransformed: unitWasTransformed,
-          amountByUser: amountByUser,
-        );
+              proteinAux += protein;
+              fatAux += fat;
+              carbsAux += carbohydrates;
+              caloriesAux += calories;
 
-        // Informacion de las sugerencias
-        var suggestions = systemResult['suggestions'];
-        List<FoodReportModel> suggestionsList = [];
+              FoodModel foundFoodModel = FoodModel(
+                id: foodId,
+                foodName: foundFoodName,
+                otherNames: otherNames,
+                description: foundFoodDescription,
+                portionSize: portionSize,
+                portionSizeUnit: portionSizeUnit,
+                servingSize: servingSize,
+                servingSizeUnit: servingSizeUnit,
+                foodSource: foodSource,
+                calories: calories,
+                protein: protein,
+                fat: fat,
+                carbohydrates: carbohydrates,
+              );
 
-        for (var suggestion in suggestions) {
-          var suggestionFoodItemId = suggestion['id'];
-          var suggestionScore = suggestion['score'];
-          var suggestionAmount = suggestion['amount'];
-          var suggestionUnitWasTransformed = suggestion['unitWasTransformed'];
-          var suggestionAmountByUser = suggestion['amountByUser'];
+              // Modelo del alimento encontrado
+              foundFoodItemModel = FoodReportModel(
+                id: foodItemId,
+                food: foundFoodModel,
+                score: score,
+                amount: amount,
+                unitWasTransformed: unitWasTransformed,
+                amountByUser: amountByUser,
+              );
+            }
 
-          var suggestionFood = suggestion['food'];
-          var suggestionFoodId = suggestionFood['id'];
-          var suggestionFoodName = suggestionFood['foodName'];
-          var suggestionOtherNames = suggestionFood['otherNames'];
-          var suggestionFoodDescription = suggestionFood['description'];
-          var suggestionPortionSize = suggestionFood['portionSize'];
-          var suggestionPortionSizeUnit = suggestionFood['portionSizeUnit'];
-          var suggestionServingSize = suggestionFood['servingSize'];
-          var suggestionServingSizeUnit = suggestionFood['servingSizeUnit'];
-          var suggestionFoodSource = suggestionFood['foodSource'];
-          var suggestionCalories = suggestionFood['calories'];
-          var suggestionProtein = suggestionFood['protein'];
-          var suggestionFat = suggestionFood['fat'];
-          var suggestionCarbohydrates = suggestionFood['carbohydrates'];
+            // Informacion de las sugerencias
+            var suggestions = systemResult['suggestions'];
+            List<FoodReportModel> suggestionsList = [];
 
-          FoodModel suggestionFoodModel = FoodModel(
-            id: suggestionFoodId,
-            foodName: suggestionFoodName,
-            otherNames: suggestionOtherNames,
-            description: suggestionFoodDescription,
-            portionSize: suggestionPortionSize,
-            portionSizeUnit: suggestionPortionSizeUnit,
-            servingSize: suggestionServingSize,
-            servingSizeUnit: suggestionServingSizeUnit,
-            foodSource: suggestionFoodSource,
-            calories: suggestionCalories,
-            protein: suggestionProtein,
-            fat: suggestionFat,
-            carbohydrates: suggestionCarbohydrates,
-          );
+            for (var suggestion in suggestions) {
+              String suggestionFoodItemId = suggestion['id'];
+              double suggestionScore = suggestion['score'] is int
+                  ? (suggestion['score'] as int).toDouble()
+                  : suggestion['score'];
+              double suggestionAmount = suggestion['amount'] is int
+                  ? (suggestion['amount'] as int).toDouble()
+                  : suggestion['amount'];
+              bool suggestionUnitWasTransformed =
+                  suggestion['unitWasTransformed'].toString().toLowerCase() ==
+                      'true';
+              bool suggestionAmountByUser =
+                  suggestion['amountByUser'].toString().toLowerCase() == 'true';
 
-          FoodReportModel suggestionFoodItemModel = FoodReportModel(
-            id: suggestionFoodItemId,
-            food: suggestionFoodModel,
-            score: suggestionScore,
-            amount: suggestionAmount,
-            unitWasTransformed: suggestionUnitWasTransformed,
-            amountByUser: suggestionAmountByUser,
-          );
+              var suggestionFood = suggestion['food'];
+              String suggestionFoodId = suggestionFood['id'];
+              String suggestionFoodName = suggestionFood['foodName'];
+              List<String> suggestionOtherNames = [];
+              for (var otherName in suggestionFood['otherNames']) {
+                suggestionOtherNames.add(otherName);
+              }
+              List<String> suggestionFoodDescription = [];
+              for (var description in suggestionFood['description']) {
+                suggestionFoodDescription.add(description);
+              }
+              double suggestionPortionSize =
+                  suggestionFood['portionSize'] is int
+                      ? (suggestionFood['portionSize'] as int).toDouble()
+                      : suggestionFood['portionSize'];
+              String suggestionPortionSizeUnit =
+                  suggestionFood['portionSizeUnit'];
+              double suggestionServingSize =
+                  suggestionFood['servingSize'] is int
+                      ? (suggestionFood['servingSize'] as int).toDouble()
+                      : suggestionFood['servingSize'];
+              String suggestionServingSizeUnit =
+                  suggestionFood['servingSizeUnit'];
+              String suggestionFoodSource = suggestionFood['foodSource'];
+              double suggestionCalories = suggestionFood['calories'] is int
+                  ? (suggestionFood['calories'] as int).toDouble()
+                  : suggestionFood['calories'];
+              double suggestionProtein = suggestionFood['protein'] is int
+                  ? (suggestionFood['protein'] as int).toDouble()
+                  : suggestionFood['protein'];
+              double suggestionFat = suggestionFood['fat'] is int
+                  ? (suggestionFood['fat'] as int).toDouble()
+                  : suggestionFood['fat'];
+              double suggestionCarbohydrates =
+                  suggestionFood['carbohydrates'] is int
+                      ? (suggestionFood['carbohydrates'] as int).toDouble()
+                      : suggestionFood['carbohydrates'];
 
-          suggestionsList.add(suggestionFoodItemModel);
+              FoodModel suggestionFoodModel = FoodModel(
+                id: suggestionFoodId,
+                foodName: suggestionFoodName,
+                otherNames: suggestionOtherNames,
+                description: suggestionFoodDescription,
+                portionSize: suggestionPortionSize,
+                portionSizeUnit: suggestionPortionSizeUnit,
+                servingSize: suggestionServingSize,
+                servingSizeUnit: suggestionServingSizeUnit,
+                foodSource: suggestionFoodSource,
+                calories: suggestionCalories,
+                protein: suggestionProtein,
+                fat: suggestionFat,
+                carbohydrates: suggestionCarbohydrates,
+              );
+
+              // Modelo de la sugerencia
+              FoodReportModel suggestionFoodItemModel = FoodReportModel(
+                id: suggestionFoodItemId,
+                food: suggestionFoodModel,
+                score: suggestionScore,
+                amount: suggestionAmount,
+                unitWasTransformed: suggestionUnitWasTransformed,
+                amountByUser: suggestionAmountByUser,
+              );
+
+              suggestionsList.add(suggestionFoodItemModel);
+            }
+
+            FoodItemsModel foodItemsModel = FoodItemsModel(
+              foodFoundItem: hasItems ? foundFoodItemModel : null,
+              suggestions: suggestionsList,
+            );
+
+            MealModel foodItem = MealModel(
+              id: foodReportId,
+              userReport: userReportModel,
+              foodReports: foodItemsModel,
+            );
+
+            foodItems.add(foodItem);
+          }
         }
 
-        var dbLookupPreference = foodReports['dbLookupPreference'];
-        var mealRecordedAt = foodReports['mealRecordedAt'];
-        var pending = foodReports['pending'];
-
-        FoodItemsModel foodItemsModel = FoodItemsModel(
-          foodFoundItem: foundFoodItemModel,
-          suggestions: suggestionsList,
-        );
+        String dbLookupPreference = report['dbLookupPreference'];
+        bool pending = report['pending'].toString().toLowerCase() == 'true';
 
         MealReportModel meal = MealReportModel(
-          userReport: userReportModel,
           id: mealId,
           appUserId: appUserId,
           audioId: audioId,
           rawTranscript: rawTranscript,
-          foodReports: foodItemsModel,
+          foodReports: foodItems,
           dbLookupPreference: dbLookupPreference,
           mealRecordedAt: mealRecordedAt,
           pending: pending,
         );
-
-        if (meal.mealRecordedAt.isAfter(today)) {
-          mealReportCards.add(MealReportCard(mealReport: meal));
-        }
+        meals.add(meal);
       }
+
+      List<MealReportCard> mealReportCards = [];
+      for (var meal in meals) {
+        MealReportCard mealCard = MealReportCard(
+          mealReport: meal,
+          authToken: widget.authToken,
+        );
+        mealReportCards.add(mealCard);
+      }
+
+      widget.protein = proteinAux.round();
+      widget.fat = fatAux.round();
+      widget.carbs = carbsAux.round();
+      widget.calories = caloriesAux.round();
 
       return mealReportCards;
     } else if (res.statusCode == 401) {
-      throw Exception('Unauthorized');
+      var jsonResponse = jsonDecode(res.body);
+      var message = jsonResponse['errorInfo']['message'];
+      throw Exception(message);
     } else {
       throw Exception('Failed to load reports');
     }
   }
 
-  List<double> getMealInfo(List<MealReportModel> meals) {
-    double protein = 0;
-    double fat = 0;
-    double carbs = 0;
-    double calories = 0;
-
-    for (MealReportModel meal in meals) {
-      FoodItemsModel foodItems = meal.foodReports;
-      FoodReportModel foodReport = foodItems.foodFoundItem;
-      FoodModel food = foodReport.food;
-
-      protein += food.protein;
-      fat += food.fat;
-      carbs += food.carbohydrates;
-      calories += food.calories;
-    }
-
-    return [protein, fat, carbs, calories];
-  }
-
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getReports(),
+      future: getDisplayableReports(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(
@@ -238,8 +329,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
           return Center(child: Text('Error: ${snapshot.error}'));
         } else {
           var mealCards = snapshot.data as List<MealReportCard>;
-          var meals = mealCards.map((e) => e.mealReport).toList();
-          var mealsInfo = getMealInfo(meals);
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -260,14 +349,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '🔥',
                           ),
                           Text(
-                            '${mealsInfo[1]}',
+                            '${widget.fat}g',
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'BrandonGrotesque',
                             ),
                           ),
                           const Text(
                             'Grasas',
+                            style: TextStyle(
+                              fontFamily: 'BrandonGrotesque',
+                            ),
                           ),
                         ],
                       ),
@@ -292,15 +385,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 '♨️',
                               ),
                               Text(
-                                '${mealsInfo[3]}',
+                                '${widget.calories}',
                                 style: const TextStyle(
                                   color: Estilos.color1,
-                                  fontSize: 24,
+                                  fontSize: 22,
                                   fontWeight: FontWeight.bold,
+                                  fontFamily: 'BrandonGrotesque',
                                 ),
                               ),
                               const Text(
                                 'Kcal',
+                                style: TextStyle(
+                                  fontFamily: 'BrandonGrotesque',
+                                ),
                               ),
                             ],
                           ),
@@ -317,14 +414,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '🥣',
                           ),
                           Text(
-                            '${mealsInfo[0]}',
+                            '${widget.protein}g',
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
+                              fontFamily: 'BrandonGrotesque',
                             ),
                           ),
                           const Text(
                             'Proteinas',
+                            style: TextStyle(
+                              fontFamily: 'BrandonGrotesque',
+                            ),
                           ),
                         ],
                       ),
@@ -344,14 +445,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         '🍚',
                       ),
                       Text(
-                        '${mealsInfo[2]}',
+                        '${widget.carbs}g',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
+                          fontFamily: 'BrandonGrotesque',
                         ),
                       ),
                       const Text(
                         'Carbohidratos',
+                        style: TextStyle(
+                          fontFamily: 'BrandonGrotesque',
+                        ),
                       ),
                     ],
                   ),
@@ -367,6 +472,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         fontWeight: FontWeight.bold,
                         fontSize: 20,
                         color: Estilos.color1,
+                        fontFamily: 'BrandonGrotesque',
                       ),
                     ),
                   ),
