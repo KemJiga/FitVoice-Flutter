@@ -190,6 +190,9 @@ class _RecordScreenState extends State<RecordScreen> {
       print(jsonResponse['body']);
 
       sent = true;
+      setState(() {
+        _recorded = false;
+      });
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -224,8 +227,9 @@ class _RecordScreenState extends State<RecordScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text('Graba lo que comiste hoy!'),
-          const SizedBox(height: 40),
+          Text('Graba lo que comiste hoy!',
+              style: Estilos.textStyle1(20, Estilos.color5, 'bold')),
+          const SizedBox(height: 20),
           Stack(
             children: [
               SizedBox(
@@ -270,7 +274,8 @@ class _RecordScreenState extends State<RecordScreen> {
           if (_recorded)
             Column(
               children: [
-                const Text('Escucha tu grabación! ⬇️'),
+                Text('Escucha tu grabación! ⬇️',
+                    style: Estilos.textStyle1(20, Estilos.color5, 'bold')),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -307,13 +312,14 @@ class _RecordScreenState extends State<RecordScreen> {
                   activeColor: Estilos.color1,
                 ),
                 Text(
-                    '${formatTime((_audioDuration - _audioPosition).inSeconds)}s'),
+                    '${formatTime((_audioDuration - _audioPosition).inSeconds)}s',
+                    style: Estilos.textStyle1(16, Colors.black, 'bold')),
                 const SizedBox(height: 30),
                 ElevatedButton(
                   onPressed: uploadAudio,
-                  child: const Text(
+                  child: Text(
                     'Enviar grabación',
-                    style: TextStyle(color: Estilos.color1),
+                    style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
                   ),
                 ),
               ],
