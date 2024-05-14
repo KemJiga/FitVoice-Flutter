@@ -130,131 +130,136 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: const Text('Informacion personal'),
-      ),
-      body: Center(
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                margin: const EdgeInsets.only(
-                  top: 30,
-                  bottom: 20,
-                  left: 20,
-                  right: 20,
+    return PopScope(
+      canPop: false,
+      child: Scaffold(
+        appBar: AppBar(
+          automaticallyImplyLeading: false,
+          title: const Text('Informacion personal'),
+        ),
+        body: Center(
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Container(
+                  margin: const EdgeInsets.only(
+                    top: 30,
+                    bottom: 20,
+                    left: 20,
+                    right: 20,
+                  ),
+                  width: 200,
+                  child: Image.asset('assets/icon/icon.png'),
                 ),
-                width: 200,
-                child: Image.asset('assets/icon/icon.png'),
-              ),
-              Card(
-                margin: const EdgeInsets.all(20),
-                child: SingleChildScrollView(
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Form(
-                      key: _formHealth,
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Edad',
-                            ),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: false),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            validator: (value) {
-                              if (value!.isEmpty ||
-                                  int.parse(value) < 0 ||
-                                  int.parse(value) > 100) {
-                                return 'Por favor ingrese su edad';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _enteredAge = value!;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Altura (cm)',
-                            ),
-                            keyboardType: const TextInputType.numberWithOptions(
-                                decimal: false),
-                            inputFormatters: [
-                              FilteringTextInputFormatter.digitsOnly
-                            ],
-                            validator: (value) {
-                              if (value!.isEmpty ||
-                                  int.parse(value) < 0 ||
-                                  int.parse(value) > 250) {
-                                return 'Por favor ingrese su altura';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _enteredHeight = value!;
-                            },
-                          ),
-                          TextFormField(
-                            decoration: const InputDecoration(
-                              labelText: 'Peso (kg)',
-                            ),
-                            keyboardType: TextInputType.number,
-                            validator: (value) {
-                              if (value!.isEmpty || double.parse(value) < 0) {
-                                return 'Por favor ingrese su peso';
-                              }
-                              return null;
-                            },
-                            onSaved: (value) {
-                              _enteredWeight = value!;
-                            },
-                          ),
-                          DropdownButtonFormField<String>(
-                              value: _selectedGender.toString(),
-                              onChanged: (String? newValue) {
-                                setState(() {
-                                  _selectedGender = Gender.values.firstWhere(
-                                      (element) =>
-                                          element.toString() == newValue);
-                                });
+                Card(
+                  margin: const EdgeInsets.all(20),
+                  child: SingleChildScrollView(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Form(
+                        key: _formHealth,
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Edad',
+                              ),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: false),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty ||
+                                    int.parse(value) < 0 ||
+                                    int.parse(value) > 100) {
+                                  return 'Por favor ingrese su edad';
+                                }
+                                return null;
                               },
-                              items: Gender.values
-                                  .map((e) => DropdownMenuItem(
-                                        value: e.toString(),
-                                        child: Text(
-                                          cap(e.toString().split('.').last),
-                                          style: const TextStyle(
-                                            color:
-                                                Color.fromARGB(255, 81, 81, 81),
-                                          ),
-                                        ),
-                                      ))
-                                  .toList()),
-                          const SizedBox(
-                            height: 12,
-                          ),
-                          ElevatedButton(
-                            onPressed: _submit,
-                            child: const Text(
-                              'Iniciar sesión',
-                              style: TextStyle(color: Estilos.color1),
+                              onSaved: (value) {
+                                _enteredAge = value!;
+                              },
                             ),
-                          ),
-                        ],
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Altura (cm)',
+                              ),
+                              keyboardType:
+                                  const TextInputType.numberWithOptions(
+                                      decimal: false),
+                              inputFormatters: [
+                                FilteringTextInputFormatter.digitsOnly
+                              ],
+                              validator: (value) {
+                                if (value!.isEmpty ||
+                                    int.parse(value) < 0 ||
+                                    int.parse(value) > 250) {
+                                  return 'Por favor ingrese su altura';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredHeight = value!;
+                              },
+                            ),
+                            TextFormField(
+                              decoration: const InputDecoration(
+                                labelText: 'Peso (kg)',
+                              ),
+                              keyboardType: TextInputType.number,
+                              validator: (value) {
+                                if (value!.isEmpty || double.parse(value) < 0) {
+                                  return 'Por favor ingrese su peso';
+                                }
+                                return null;
+                              },
+                              onSaved: (value) {
+                                _enteredWeight = value!;
+                              },
+                            ),
+                            DropdownButtonFormField<String>(
+                                value: _selectedGender.toString(),
+                                onChanged: (String? newValue) {
+                                  setState(() {
+                                    _selectedGender = Gender.values.firstWhere(
+                                        (element) =>
+                                            element.toString() == newValue);
+                                  });
+                                },
+                                items: Gender.values
+                                    .map((e) => DropdownMenuItem(
+                                          value: e.toString(),
+                                          child: Text(
+                                            cap(e.toString().split('.').last),
+                                            style: const TextStyle(
+                                              color: Color.fromARGB(
+                                                  255, 81, 81, 81),
+                                            ),
+                                          ),
+                                        ))
+                                    .toList()),
+                            const SizedBox(
+                              height: 12,
+                            ),
+                            ElevatedButton(
+                              onPressed: _submit,
+                              child: const Text(
+                                'Iniciar sesión',
+                                style: TextStyle(color: Estilos.color1),
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
