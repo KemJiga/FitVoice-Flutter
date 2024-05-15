@@ -1,5 +1,6 @@
 //import 'package:fitvoice/models/food_items_model.dart';
 //import 'package:fitvoice/models/food_items_model.dart';
+import 'package:fitvoice/utils/date_translator.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
@@ -17,17 +18,28 @@ class MealReportCard extends StatelessWidget {
 
   ListTile setTiles(MealReportModel meal) {
     DateTime mealTime = meal.mealRecordedAt;
+    mealTime = mealTime.toLocal();
     var weekDay = DateFormat('EEEE');
-    var formatter = DateFormat('d MMMM, y');
+    var day = DateFormat('d');
+    var month = DateFormat('MMMM');
+    var year = DateFormat('y');
+    var timeFormatter = DateFormat('hh:mm a');
+
+    String mealDay = day.format(mealTime);
+    String mealMonth = DateTranslator().translateMonth(month.format(mealTime));
+    String mealYear = year.format(mealTime);
+    String mealWeekDay =
+        DateTranslator().translateWeekDay(weekDay.format(mealTime));
+    String mealTimeFormatted = timeFormatter.format(mealTime);
 
     return ListTile(
       title: Text(
-        'Comida del dia: ${weekDay.format(mealTime)}',
+        'Comida del dia: $mealWeekDay',
         style: const TextStyle(
             fontWeight: FontWeight.w400, fontFamily: 'BrandonGrotesque'),
       ),
       subtitle: Text(
-        'Fecha: ${formatter.format(mealTime)}',
+        'Fecha: $mealDay de $mealMonth, $mealYear - $mealTimeFormatted',
         style: const TextStyle(
             fontWeight: FontWeight.w300, fontFamily: 'BrandonGrotesque'),
       ),
