@@ -58,11 +58,13 @@ class ListOfMealReports extends StatelessWidget {
               if (newMealReports.isNotEmpty)
                 Text('Nuevos reportes',
                     style: Estilos.textStyle1(20, Estilos.color1, 'bold')),
+              const SizedBox(height: 10, width: double.infinity),
               if (newMealReports.isNotEmpty)
                 ReportList(reports: newMealReports),
               if (readedReports.isNotEmpty)
                 Text('Reportes leidos',
-                    style: Estilos.textStyle1(20, Estilos.color3, 'bold')),
+                    style: Estilos.textStyle1(20, Estilos.color1, 'bold')),
+              const SizedBox(height: 10, width: double.infinity),
               if (readedReports.isNotEmpty) ReportList(reports: readedReports),
               SizedBox(
                 width: double.infinity,
