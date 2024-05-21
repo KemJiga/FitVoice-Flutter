@@ -12,7 +12,10 @@ class MealReportCard extends StatelessWidget {
     super.key,
     required this.mealReport,
     required this.authToken,
+    required this.callout,
   });
+
+  final void Function() callout;
   final String? authToken;
   final MealReportModel mealReport;
 
@@ -60,7 +63,9 @@ class MealReportCard extends StatelessWidget {
                   authToken: authToken,
                 ),
               ),
-            );
+            ).then((value) {
+              callout();
+            });
           },
           child: setTiles(mealReport),
         ),
