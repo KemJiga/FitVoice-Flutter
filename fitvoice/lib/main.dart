@@ -16,9 +16,36 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    //Color? backgroundColor = Colors.grey[300];
+    Color? backgroundColor = const Color.fromRGBO(250, 250, 250, 1);
+    return MaterialApp(
+      theme: ThemeData(
+        elevatedButtonTheme: ElevatedButtonThemeData(
+          style: ElevatedButton.styleFrom(
+            backgroundColor: Colors.white,
+          ),
+        ),
+        listTileTheme: const ListTileThemeData(
+          tileColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(10)),
+          ),
+        ),
+        cardTheme: CardTheme(
+          color: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+          ),
+        ),
+        scaffoldBackgroundColor: backgroundColor,
+        appBarTheme: AppBarTheme(
+          backgroundColor: backgroundColor,
+          iconTheme: const IconThemeData(color: Colors.black),
+        ),
+      ),
+      debugShowCheckedModeBanner: false,
       title: 'Fit Voice',
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }
