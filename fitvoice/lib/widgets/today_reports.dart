@@ -10,7 +10,7 @@ class TReportList extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.fromLTRB(24, 8, 24, 8),
+        padding: const EdgeInsets.symmetric(horizontal: 14),
         child: ListView.builder(
           itemBuilder: (context, index) {
             return reports[index];
