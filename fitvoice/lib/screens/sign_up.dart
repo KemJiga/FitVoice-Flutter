@@ -53,17 +53,13 @@ class _SignUpScreenState extends State<SignUpScreen> {
       },
     );
     if (res.statusCode == 201) {
-      var jsonResponse = jsonDecode(res.body);
-      var appUser = jsonResponse['appUser'];
-      var userId = appUser['userId'];
-
       ScaffoldMessenger.of(context).clearSnackBars();
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          duration: const Duration(seconds: 1),
+        const SnackBar(
+          duration: Duration(seconds: 1),
           content: Text(
-            'Registro exitoso. $userId',
-            style: const TextStyle(
+            'Registro exitoso.',
+            style: TextStyle(
               fontFamily: 'BrandonGrotesque',
             ),
           ),
