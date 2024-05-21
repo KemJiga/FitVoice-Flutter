@@ -3,26 +3,21 @@ import 'package:fitvoice/models/food_model.dart';
 import 'package:fitvoice/models/food_report_model.dart';
 import 'package:fitvoice/models/meal_model.dart';
 import 'package:fitvoice/models/meal_report_model.dart';
+import 'package:fitvoice/models/unit_transformation_info.dart';
 import 'package:fitvoice/models/user_report_model.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:fitvoice/widgets/today_reports.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 
 import 'dart:convert';
 import 'dart:math' as math;
 import 'package:http/http.dart' as http;
 
-// ignore: must_be_immutable
 class DashboardScreen extends StatefulWidget {
-  DashboardScreen({super.key, required this.authToken});
+  const DashboardScreen({super.key, required this.authToken});
 
   final String? authToken;
-  int protein = 0;
-  int fat = 0;
-  int carbs = 0;
-  int calories = 0;
 
   @override
   State<StatefulWidget> createState() {
@@ -34,17 +29,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
   DateTime today =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
   final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  int protein = 0;
+  int fat = 0;
+  int carbs = 0;
+  int calories = 0;
+
+  int caloriesIntake = 0;
 
   Future<List<MealReportCard>> getDisplayableReports() async {
+    var nuts = await setNutritionalInfo();
+    caloriesIntake = await getIntake();
+
+    protein = nuts[0];
+    fat = nuts[1];
+    carbs = nuts[2];
+    calories = nuts[3];
+
     var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr?fetchFoodReports=true');
 
     var res = await http.get(URL, headers: {
       'Authorization': 'Bearer ${widget.authToken}',
     });
-    double proteinAux = 0;
-    double fatAux = 0;
-    double carbsAux = 0;
-    double caloriesAux = 0;
     if (res.statusCode == 200) {
       var jsonResponse = jsonDecode(res.body);
       List<MealReportModel> meals = [];
@@ -109,6 +114,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
               bool amountByUser =
                   foundFoodItem['amountByUser'].toString().toLowerCase() ==
                       'true';
+              bool servingSizeWasUsed = foundFoodItem['servingSizeWasUsed']
+                      .toString()
+                      .toLowerCase() ==
+                  'true';
+              var unitTransformationInfo = null;
+              if (foundFoodItem['unitTransformationInfo'] != null) {
+                var unitTransformationInfo =
+                    foundFoodItem['unitTransformationInfo'];
+                String originalUnit = unitTransformationInfo['originalUnit'];
+                String finalUnit = unitTransformationInfo['finalUnit'];
+                double transformationFactor =
+                    unitTransformationInfo['transformationFactor'] is int
+                        ? (unitTransformationInfo['transformationFactor']
+                                as int)
+                            .toDouble()
+                        : unitTransformationInfo['transformationFactor'];
+
+                UnitTransformationInfo unitTransformationInfoModel =
+                    UnitTransformationInfo(
+                  originalUnit: originalUnit,
+                  finalUnit: finalUnit,
+                  transformationFactor: transformationFactor,
+                );
+                unitTransformationInfo = unitTransformationInfoModel;
+              }
 
               var food = foundFoodItem['food'];
               String foodId = food['id'];
@@ -143,11 +173,6 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ? (food['carbohydrates'] as int).toDouble()
                   : food['carbohydrates'];
 
-              proteinAux += protein;
-              fatAux += fat;
-              carbsAux += carbohydrates;
-              caloriesAux += calories;
-
               FoodModel foundFoodModel = FoodModel(
                 id: foodId,
                 foodName: foundFoodName,
@@ -172,6 +197,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 amount: amount,
                 unitWasTransformed: unitWasTransformed,
                 amountByUser: amountByUser,
+                servingSizeWasUsed: servingSizeWasUsed,
+                unitTransformationInfo: unitTransformationInfo,
               );
             }
 
@@ -192,6 +219,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
                       'true';
               bool suggestionAmountByUser =
                   suggestion['amountByUser'].toString().toLowerCase() == 'true';
+              bool suggestionServingSizeWasUsed =
+                  suggestion['servingSizeWasUsed'].toString().toLowerCase() ==
+                      'true';
+              var suggestionUnitTransformationInfo = null;
+              if (suggestion['unitTransformationInfo'] != null) {
+                var suggestionUnitTransformationInfo =
+                    suggestion['unitTransformationInfo'];
+                String originalUnit =
+                    suggestionUnitTransformationInfo['originalUnit'];
+                String finalUnit =
+                    suggestionUnitTransformationInfo['finalUnit'];
+                double transformationFactor = suggestionUnitTransformationInfo[
+                        'transformationFactor'] is int
+                    ? (suggestionUnitTransformationInfo['transformationFactor']
+                            as int)
+                        .toDouble()
+                    : suggestionUnitTransformationInfo['transformationFactor'];
+
+                UnitTransformationInfo suggestionUnitTransformationInfoModel =
+                    UnitTransformationInfo(
+                  originalUnit: originalUnit,
+                  finalUnit: finalUnit,
+                  transformationFactor: transformationFactor,
+                );
+                suggestionUnitTransformationInfo =
+                    suggestionUnitTransformationInfoModel;
+              }
 
               var suggestionFood = suggestion['food'];
               String suggestionFoodId = suggestionFood['id'];
@@ -255,6 +309,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 amount: suggestionAmount,
                 unitWasTransformed: suggestionUnitWasTransformed,
                 amountByUser: suggestionAmountByUser,
+                servingSizeWasUsed: suggestionServingSizeWasUsed,
+                unitTransformationInfo: suggestionUnitTransformationInfo,
               );
 
               suggestionsList.add(suggestionFoodItemModel);
@@ -296,14 +352,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
         MealReportCard mealCard = MealReportCard(
           mealReport: meal,
           authToken: widget.authToken,
+          callout: getDisplayableReports,
         );
         mealReportCards.add(mealCard);
       }
-
-      widget.protein = proteinAux.round();
-      widget.fat = fatAux.round();
-      widget.carbs = carbsAux.round();
-      widget.calories = caloriesAux.round();
 
       return mealReportCards;
     } else if (res.statusCode == 401) {
@@ -312,6 +364,81 @@ class _DashboardScreenState extends State<DashboardScreen> {
       throw Exception(message);
     } else {
       throw Exception('Failed to load reports');
+    }
+  }
+
+  Future<List<int>> setNutritionalInfo() async {
+    String endOfToday = DateTime(DateTime.now().year, DateTime.now().month,
+            DateTime.now().day, 23, 59, 59, 999)
+        .toUtc()
+        .toIso8601String();
+    String startOfToday = today.toUtc().toIso8601String();
+    print(startOfToday);
+    print(endOfToday);
+    var URL = Uri.parse(
+        '$baseUrl/api/v1/foodlog/mrr/nutrition?mealRecordedEnd=$endOfToday&mealRecordedStart=$startOfToday');
+    var res = await http.get(URL, headers: {
+      'Authorization': 'Bearer ${widget.authToken}',
+    });
+
+    if (res.statusCode == 200) {
+      var jsonResponse = jsonDecode(res.body);
+      print(jsonResponse);
+      int proteinAux = jsonResponse['protein'] is int
+          ? jsonResponse['protein'] as int
+          : (jsonResponse['protein']).round();
+      int fatAux = jsonResponse['fat'] is int
+          ? jsonResponse['fat'] as int
+          : (jsonResponse['fat']).round();
+      int carbsAux = jsonResponse['carbohydrates'] is int
+          ? jsonResponse['carbohydrates'] as int
+          : (jsonResponse['carbohydrates']).round();
+      int caloriesAux = jsonResponse['calories'] is int
+          ? jsonResponse['calories'] as int
+          : (jsonResponse['calories']).round();
+
+      return [proteinAux, fatAux, carbsAux, caloriesAux];
+    } else if (res.statusCode == 401) {
+      var jsonResponse = jsonDecode(res.body);
+      var message = jsonResponse['errorInfo']['message'];
+      throw Exception(message);
+    } else {
+      throw Exception('Failed to load');
+    }
+  }
+
+  Future<int> getIntake() async {
+    var URL = Uri.parse('$baseUrl/api/v1/auth/users/me');
+    var res = await http.get(
+      URL,
+      headers: {
+        'Authorization': 'Bearer ${widget.authToken}',
+      },
+    );
+    double bmr = 0;
+    if (res.statusCode == 200) {
+      var jsonResponse = jsonDecode(res.body);
+      var healthData = jsonResponse['appUser']['healthData'];
+      int height = int.parse(healthData['height']);
+      double weight = double.parse(healthData['weight']);
+      int age = int.parse(healthData['age']);
+      String gender = healthData['gender'];
+
+      /*
+      10 * weight (kg) + 6.25 * height(cm) - 5 * age(y) + 5 for (man)
+      10 * weight(kg) + 6.25 * height(cm) - 5 * age(y) - 161 for ​(woman)
+      */
+
+      if (gender == 'male') {
+        bmr = 10 * weight + 6.25 * height - 5 * age + 5;
+      } else {
+        bmr = 10 * weight + 6.25 * height - 5 * age - 161;
+      }
+
+      bmr *= 1.375;
+      return bmr.round();
+    } else {
+      throw Exception('Failed to load user info');
     }
   }
 
@@ -331,7 +458,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           var mealCards = snapshot.data as List<MealReportCard>;
           return Center(
             child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
+              mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 const SizedBox(
                   height: 50,
@@ -349,7 +476,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '🔥',
                           ),
                           Text(
-                            '${widget.fat}g',
+                            '${fat}g',
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -385,7 +512,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 '♨️',
                               ),
                               Text(
-                                '${widget.calories}',
+                                '$calories',
                                 style: const TextStyle(
                                   color: Estilos.color1,
                                   fontSize: 22,
@@ -414,7 +541,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                             '🥣',
                           ),
                           Text(
-                            '${widget.protein}g',
+                            '${protein}g',
                             style: const TextStyle(
                               fontSize: 24,
                               fontWeight: FontWeight.bold,
@@ -445,7 +572,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         '🍚',
                       ),
                       Text(
-                        '${widget.carbs}g',
+                        '${carbs}g',
                         style: const TextStyle(
                           fontSize: 24,
                           fontWeight: FontWeight.bold,
@@ -461,23 +588,62 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     ],
                   ),
                 ),
-                const SizedBox(height: 20),
-                const Padding(
-                  padding: EdgeInsets.fromLTRB(24, 8, 8, 8),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      'Reportes del día',
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        fontSize: 20,
-                        color: Estilos.color1,
-                        fontFamily: 'BrandonGrotesque',
+                const SizedBox(height: 10),
+                Text(
+                  'Has consumido $calories de $caloriesIntake Kcal hoy',
+                  style: const TextStyle(
+                    fontSize: 16,
+                    color: Estilos.color5,
+                    fontWeight: FontWeight.w400,
+                    fontFamily: 'BrandonGrotesque',
+                  ),
+                ),
+                const Divider(
+                  color: Estilos.color1,
+                  thickness: 2,
+                  indent: 20,
+                  endIndent: 20,
+                ),
+                const SizedBox(height: 10),
+                if (mealCards.isNotEmpty) ...[
+                  const Padding(
+                    padding: EdgeInsets.fromLTRB(14, 8, 14, 8),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text(
+                        'Reportes del día',
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 20,
+                          color: Estilos.color1,
+                          fontFamily: 'BrandonGrotesque',
+                        ),
                       ),
                     ),
                   ),
-                ),
-                TReportList(reports: mealCards),
+                  TReportList(reports: mealCards),
+                ] else ...[
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
+                    child: LayoutBuilder(
+                      builder: (ctx, constraints) {
+                        return Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Text(
+                                'Aun no hay reportes de comidas!',
+                                textAlign: TextAlign.center,
+                                style: Estilos.textStyle1(
+                                    25, Estilos.color1, 'bold'),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                ],
               ],
             ),
           );
