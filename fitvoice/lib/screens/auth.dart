@@ -12,61 +12,48 @@ class AuthScreen extends StatefulWidget {
   }
 }
 
-//TODO: Mejorar UI
 class _AuthScreenState extends State<AuthScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: SizedBox(
-          width: double.infinity,
-          height: MediaQuery.of(context).size.height * 0.5,
-          child: Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Card(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    'Bienvenido a FitVoice',
-                    style: TextStyle(
-                      fontSize: 24,
-                      color: Estilos.color1,
-                      fontWeight: FontWeight.bold,
-                    ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Text(
+              'Bienvenido a FitVoice',
+              style: Estilos.textStyle1(24, Estilos.color1, 'bold'),
+            ),
+            const SizedBox(height: 10),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LoginScreen(),
                   ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const LoginScreen(),
-                        ),
-                      );
-                    },
-                    child: Text(
-                      'Iniciar sesión',
-                      style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
-                    ),
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => const SignUpScreen(),
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Registrarse',
-                      style: TextStyle(color: Estilos.color1),
-                    ),
-                  ),
-                ],
+                );
+              },
+              child: Text(
+                'Iniciar sesión',
+                style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
               ),
             ),
-          ),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const SignUpScreen(),
+                  ),
+                );
+              },
+              child: Text(
+                'Registrarse',
+                style: Estilos.textStyle1(16, Estilos.color1, 'normal'),
+              ),
+            ),
+          ],
         ),
       ),
     );
