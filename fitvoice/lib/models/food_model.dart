@@ -16,8 +16,8 @@ class FoodModel {
   });
   String id;
   String foodName;
-  String otherNames;
-  String description;
+  List<String> otherNames;
+  List<String> description;
   double portionSize;
   String portionSizeUnit;
   double servingSize;
@@ -27,4 +27,17 @@ class FoodModel {
   double protein;
   double fat;
   double carbohydrates;
+
+  @override
+  String toString() {
+    return 'FoodModel(id: $id, foodName: $foodName, otherNames: $otherNames, description: $description, portionSize: $portionSize, portionSizeUnit: $portionSizeUnit, servingSize: $servingSize, servingSizeUnit: $servingSizeUnit, foodSource: $foodSource, calories: $calories, protein: $protein, fat: $fat, carbohydrates: $carbohydrates)';
+  }
+
+  String getDescription() {
+    return description.join(', ');
+  }
+
+  String getOtherNames() {
+    return otherNames.join(', ');
+  }
 }

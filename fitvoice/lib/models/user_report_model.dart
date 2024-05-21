@@ -7,7 +7,16 @@ class UserReportModel {
   });
 
   String foodName;
-  String description;
+  List<String> description;
   double amount;
   String unit;
+
+  @override
+  String toString() {
+    return 'UserReportModel(foodName: $foodName, description: $description, amount: $amount, unit: $unit)';
+  }
+
+  String getDescription() {
+    return description.join(',');
+  }
 }
