@@ -6,6 +6,7 @@ import 'package:fitvoice/screens/database_screen.dart';
 import 'package:fitvoice/screens/meal_reports_screen.dart';
 import 'package:fitvoice/screens/profile_screen.dart';
 import 'package:fitvoice/screens/record_screen.dart';
+import 'package:fitvoice/utils/date_translator.dart';
 import 'package:fitvoice/utils/styles.dart';
 //import 'package:fitvoice/widgets/meal_report.dart';
 
@@ -26,10 +27,12 @@ class _TabsScreenState extends State<TabsScreen> {
   int _selectedPageIndex = 2;
 
   String getDate() {
-    final String locale = Intl.getCurrentLocale();
     DateTime now = DateTime.now();
-    String formattedDate = DateFormat('MMMM d, EEEE', locale).format(now);
-    return formattedDate;
+    var weekDay =
+        DateTranslator().translateWeekDay(DateFormat('EEEE').format(now));
+    var day = DateFormat('d').format(now);
+    var month = DateTranslator().translateMonth(DateFormat('MMMM').format(now));
+    return '$weekDay, $day de $month';
   }
 
   void _selectPage(int index) {
@@ -44,11 +47,8 @@ class _TabsScreenState extends State<TabsScreen> {
       authToken: widget.authToken!,
     );
     var date = getDate();
-    //var data = fetchReports();
-    //var dataCards = data.map((e) => MealReportCard(mealReport: e)).toList();
 
     var activePagename = "Grabar";
-    //TODO: entregar el authtoken y hacer que cada pantalla se encargue de sus datos
     switch (_selectedPageIndex) {
       case 0:
         activePage = DashboardScreen(authToken: widget.authToken!);
@@ -80,7 +80,7 @@ class _TabsScreenState extends State<TabsScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          toolbarHeight: MediaQuery.of(context).size.height * 0.1,
+          toolbarHeight: MediaQuery.of(context).size.height * 0.075,
           title: Center(
             child: Column(
               children: [
@@ -96,9 +96,12 @@ class _TabsScreenState extends State<TabsScreen> {
             ),
           ),
         ),
-        body: activePage,
+        body: SizedBox(
+            height: MediaQuery.of(context).size.height * 0.850,
+            child: activePage),
         bottomNavigationBar: BottomNavigationBar(
           selectedLabelStyle: const TextStyle(fontFamily: 'BrandonGrotesque'),
+          backgroundColor: Colors.grey[300],
           selectedItemColor: Estilos.color1,
           unselectedItemColor: Estilos.color5,
           onTap: _selectPage,
