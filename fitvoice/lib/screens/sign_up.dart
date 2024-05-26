@@ -99,7 +99,7 @@ class _SignUpScreenState extends State<SignUpScreen> {
         const SnackBar(
           duration: Duration(seconds: 1),
           content: Text(
-            'Ya existe un usuario con este correo.',
+            'Ya existe un usuario con este correo electrónico.',
             style: TextStyle(
               fontFamily: 'BrandonGrotesque',
             ),

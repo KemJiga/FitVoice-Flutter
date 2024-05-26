@@ -227,7 +227,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
             appBar: AppBar(
               toolbarHeight: MediaQuery.of(context).size.height * 0.075,
               title: const Text(
-                'Revision de comida',
+                'Revisión de comida',
                 style: TextStyle(
                   color: Estilos.color5,
                   fontFamily: 'BrandonGrotesque',
@@ -273,7 +273,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
                                     text: TextSpan(
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Transcripcion: ',
+                                          text: 'Transcripción: ',
                                           style: Estilos.textStyle1(
                                               16, Estilos.color5, 'bold'),
                                         ),
@@ -307,7 +307,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
                           width: double.infinity,
                         ),
                         Text(
-                          'Informacion nutricional',
+                          'Información nutricional',
                           style: Estilos.textStyle1(20, Estilos.color1, 'bold'),
                         ),
                         const SizedBox(
@@ -330,7 +330,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
                                     text: TextSpan(
                                       children: <TextSpan>[
                                         TextSpan(
-                                          text: 'Calorias: ',
+                                          text: 'Calorías: ',
                                           style: Estilos.textStyle1(
                                               16, Estilos.color5, 'bold'),
                                         ),
@@ -339,7 +339,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
                                             style: Estilos.textStyle1(
                                                 16, Colors.black, 'normal')),
                                         TextSpan(
-                                          text: 'Proteinas: ',
+                                          text: 'Proteínas: ',
                                           style: Estilos.textStyle1(
                                               16, Estilos.color5, 'bold'),
                                         ),
@@ -404,7 +404,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
                                     padding:
                                         const EdgeInsets.fromLTRB(14, 8, 14, 8),
                                     child: Text(
-                                      'No se encontraron alimentos para este reporte. Por favor, revise la transcripcion e intentelo de nuevo.',
+                                      'No se encontraron alimentos para este reporte. Por favor, revise la transcripción e inténtelo de nuevo.',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'normal'),
                                     ),

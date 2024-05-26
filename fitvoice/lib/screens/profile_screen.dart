@@ -153,7 +153,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     Navigator.popUntil(context, (route) => route.isFirst);
                   },
                   child: Text(
-                    'Cerrar sesion',
+                    'Cerrar sesión',
                     style: Estilos.textStyle1(16, Estilos.color4, 'normal'),
                   ),
                 )

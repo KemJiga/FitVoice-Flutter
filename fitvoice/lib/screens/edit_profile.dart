@@ -99,7 +99,7 @@ class _EditProfileState extends State<EditProfile> {
           const SnackBar(
             duration: Duration(seconds: 1),
             content: Text(
-              'Actualizacion de informacion exitosa.',
+              'Actualización de información exitosa.',
               style: TextStyle(
                 fontFamily: 'BrandonGrotesque',
               ),

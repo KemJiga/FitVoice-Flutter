@@ -121,7 +121,7 @@ class _ReportScreenState extends State<ReportsScreen> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            'Aun no hay reportes de comidas!',
+                            '¡Aún no hay reportes de comidas!',
                             textAlign: TextAlign.center,
                             style:
                                 Estilos.textStyle1(25, Estilos.color1, 'bold'),
@@ -150,7 +150,7 @@ class _ReportScreenState extends State<ReportsScreen> {
                   ],
                   if (notPending.isNotEmpty) ...[
                     const SizedBox(height: 10, width: double.infinity),
-                    Text('Reportes leidos',
+                    Text('Reportes leídos',
                         style: Estilos.textStyle1(20, Estilos.color1, 'bold')),
                     const SizedBox(height: 10, width: double.infinity),
                     Column(

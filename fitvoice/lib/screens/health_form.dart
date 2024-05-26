@@ -90,7 +90,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
         const SnackBar(
           duration: Duration(seconds: 1),
           content: Text(
-            'Registro de informacion exitoso.',
+            'Registro de información exitoso.',
             style: TextStyle(
               fontFamily: 'BrandonGrotesque',
             ),
@@ -135,7 +135,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false,
-          title: const Text('Informacion personal'),
+          title: const Text('Información personal'),
         ),
         body: Center(
           child: SingleChildScrollView(

@@ -360,7 +360,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Revision de alimento',
+          'Revisión  de alimento',
           style:
               TextStyle(fontFamily: 'BrandonGrotesque', color: Estilos.color5),
         ),
@@ -405,7 +405,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'normal')),
                                   TextSpan(
-                                    text: 'Descripcion: ',
+                                    text: 'Descripción: ',
                                     style: Estilos.textStyle1(
                                         16, Estilos.color5, 'bold'),
                                   ),
@@ -485,7 +485,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                         style: Estilos.textStyle1(
                                             16, Estilos.color5, 'normal')),
                                     TextSpan(
-                                      text: 'Descripcion: ',
+                                      text: 'Descripción: ',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'bold'),
                                     ),
@@ -494,7 +494,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                         style: Estilos.textStyle1(
                                             16, Estilos.color5, 'normal')),
                                     TextSpan(
-                                      text: 'Porcion: ',
+                                      text: 'Porción: ',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'bold'),
                                     ),
@@ -504,7 +504,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                         style: Estilos.textStyle1(
                                             16, Estilos.color5, 'normal')),
                                     TextSpan(
-                                      text: 'Racion: ',
+                                      text: 'Ración: ',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'bold'),
                                     ),
@@ -514,7 +514,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                         style: Estilos.textStyle1(
                                             16, Estilos.color5, 'normal')),
                                     TextSpan(
-                                      text: 'Calorias: ',
+                                      text: 'Calorías: ',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'bold'),
                                     ),
@@ -523,7 +523,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                         style: Estilos.textStyle1(
                                             16, Estilos.color5, 'normal')),
                                     TextSpan(
-                                      text: 'Proteinas: ',
+                                      text: 'Proteínas: ',
                                       style: Estilos.textStyle1(
                                           16, Estilos.color5, 'bold'),
                                     ),
@@ -682,7 +682,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                                 padding:
                                     const EdgeInsets.fromLTRB(14, 8, 14, 8),
                                 child: Text(
-                                  'No se encontraron sugerencias para este alimento',
+                                  'No se encontraron sugerencias para este alimento.',
                                   style: Estilos.textStyle1(
                                       18, Estilos.color5, 'normal'),
                                 ),
@@ -705,7 +705,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
                             child: Padding(
                               padding: const EdgeInsets.fromLTRB(14, 8, 14, 8),
                               child: Text(
-                                'Lo sentimos, no pudimos encontrar un alimento',
+                                'Lo sentimos, no pudimos encontrar un alimento.',
                                 style: Estilos.textStyle1(
                                     18, Estilos.color5, 'bold'),
                               ),

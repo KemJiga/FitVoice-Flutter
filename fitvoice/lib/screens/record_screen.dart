@@ -227,7 +227,7 @@ class _RecordScreenState extends State<RecordScreen> {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text('Graba lo que comiste hoy!',
+          Text('¡Graba lo que comiste hoy!',
               style: Estilos.textStyle1(20, Estilos.color5, 'bold')),
           const SizedBox(height: 20),
           Stack(
@@ -274,7 +274,7 @@ class _RecordScreenState extends State<RecordScreen> {
           if (_recorded)
             Column(
               children: [
-                Text('Escucha tu grabación! ⬇️',
+                Text('¡Escucha tu grabación! ⬇️',
                     style: Estilos.textStyle1(20, Estilos.color5, 'bold')),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
