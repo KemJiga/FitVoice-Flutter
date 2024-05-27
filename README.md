@@ -6,6 +6,8 @@ This is a mobile app focused on diet tracking by voice.
 
 ## To start setting up the project
 
+First, it is important to have [Flutter SDK](https://docs.flutter.dev/get-started/install) installed
+
 Step 1: Clone the repo
 
 ```bash
