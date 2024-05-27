@@ -34,8 +34,8 @@ flutter run
 
 ## Author
 
-- [**KemJiga**](www.linkedin.com/in/kemjiga/)
-- [**MiguelSie**](www.linkedin.com/in/msarroyo/)
+- [**KemJiga**](linkedin.com/in/kemjiga/)
+- [**MiguelSie**](linkedin.com/in/msarroyo/)
 
 ## License
 
