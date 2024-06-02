@@ -1,5 +1,6 @@
 // ignore_for_file: non_constant_identifier_names, avoid_print, use_build_context_synchronously
 
+import 'package:fitvoice/utils/config.dart';
 import 'package:flutter/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter/material.dart';
@@ -52,7 +53,7 @@ class _HealthFormScreenState extends State<HealthFormScreen> {
   }
 
   Gender _selectedGender = Gender.hombre;
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   var _enteredAge = '';
   var _enteredHeight = '';
   var _enteredWeight = '';

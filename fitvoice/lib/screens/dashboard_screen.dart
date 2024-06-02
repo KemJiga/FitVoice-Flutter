@@ -5,6 +5,7 @@ import 'package:fitvoice/models/meal_model.dart';
 import 'package:fitvoice/models/meal_report_model.dart';
 import 'package:fitvoice/models/unit_transformation_info.dart';
 import 'package:fitvoice/models/user_report_model.dart';
+import 'package:fitvoice/utils/config.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:fitvoice/widgets/today_reports.dart';
@@ -28,7 +29,7 @@ class DashboardScreen extends StatefulWidget {
 class _DashboardScreenState extends State<DashboardScreen> {
   DateTime today =
       DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day);
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   int protein = 0;
   int fat = 0;
   int carbs = 0;

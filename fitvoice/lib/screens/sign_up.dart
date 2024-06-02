@@ -3,6 +3,7 @@
 //import 'package:firebase_auth/firebase_auth.dart';
 import 'dart:async';
 import 'dart:convert';
+import 'package:fitvoice/utils/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:fitvoice/screens/health_form.dart';
 
@@ -23,7 +24,7 @@ class SignUpScreen extends StatefulWidget {
 class _SignUpScreenState extends State<SignUpScreen> {
   bool _isObscure = true;
 
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   final _regexPattern =
       RegExp(r'^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d$@$!%*?&-_]{8,100}$');
 

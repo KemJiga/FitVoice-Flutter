@@ -4,6 +4,7 @@ import 'package:fitvoice/models/food_items_model.dart';
 import 'package:fitvoice/models/food_model.dart';
 import 'package:fitvoice/models/food_report_model.dart';
 import 'package:fitvoice/models/user_report_model.dart';
+import 'package:fitvoice/utils/config.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -43,7 +44,7 @@ class _SuggestedFoodScreenState extends State<SuggestedFoodScreen> {
   final formKey = GlobalKey<FormState>();
   late String _enteredAmount;
 
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
 
   @override
   void initState() {

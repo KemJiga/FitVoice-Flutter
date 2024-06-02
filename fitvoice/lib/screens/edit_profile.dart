@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'package:fitvoice/utils/config.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:fitvoice/models/user_model.dart';
@@ -24,7 +25,7 @@ enum Gender { hombre, mujer }
 
 class _EditProfileState extends State<EditProfile> {
   final _formKey = GlobalKey<FormState>();
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
 
   final String ffamily = 'BrandonGrotesque';
   final double fsize = 20;

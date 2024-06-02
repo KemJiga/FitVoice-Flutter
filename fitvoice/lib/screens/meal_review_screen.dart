@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:fitvoice/utils/config.dart';
 import 'package:fitvoice/utils/date_translator.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_info_card.dart';
@@ -40,7 +41,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
   }
 
   Future<List<MealInfoCard>> getCards() async {
-    String baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+    String baseUrl = Config.url;
 
     var URL =
         Uri.parse('$baseUrl/api/v1/foodlog/mrr/nutrition/${mealReport.id}');
@@ -109,7 +110,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
   }
 
   Future<void> deleteReport(String id) async {
-    var baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+    var baseUrl = Config.url;
     var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr/$id');
 
     var res = await http.delete(
@@ -141,7 +142,7 @@ class _MealReviewScreenState extends State<MealReviewScreen> {
   }
 
   Future<bool> _saveMealReview(BuildContext context) async {
-    var baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+    var baseUrl = Config.url;
     var URL = Uri.parse('$baseUrl/api/v1/foodlog/mrr/${mealReport.id}');
 
     var res = await http.patch(

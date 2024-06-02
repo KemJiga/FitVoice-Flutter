@@ -5,6 +5,7 @@ import 'dart:developer';
 import 'dart:io';
 import 'dart:math' as math;
 import 'dart:convert';
+import 'package:fitvoice/utils/config.dart';
 import 'package:http/http.dart' as http;
 import 'package:http_parser/http_parser.dart';
 
@@ -171,7 +172,7 @@ class _RecordScreenState extends State<RecordScreen> {
     await player.dispose();
   }
 
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   bool sent = false;
   Future<bool> uploadAudio() async {
     var URL = Uri.parse('$baseUrl/api/v1/foodlog/report/upload');

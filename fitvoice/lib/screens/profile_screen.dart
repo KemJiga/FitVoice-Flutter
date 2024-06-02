@@ -1,6 +1,7 @@
 import 'package:fitvoice/models/healthdata_model.dart';
 import 'package:fitvoice/models/user_model.dart';
 import 'package:fitvoice/screens/edit_profile.dart';
+import 'package:fitvoice/utils/config.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:flutter/material.dart';
 
@@ -19,7 +20,7 @@ class ProfileScreen extends StatefulWidget {
 }
 
 class _ProfileScreenState extends State<ProfileScreen> {
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   late UserModel user;
 
   Future<UserModel> getUserInfo() async {

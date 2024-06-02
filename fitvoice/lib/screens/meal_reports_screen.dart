@@ -1,4 +1,5 @@
 import 'package:fitvoice/models/meal_report_model.dart';
+import 'package:fitvoice/utils/config.dart';
 import 'package:fitvoice/utils/styles.dart';
 import 'package:fitvoice/widgets/meal_report.dart';
 import 'package:flutter/material.dart';
@@ -20,7 +21,7 @@ class ReportsScreen extends StatefulWidget {
 }
 
 class _ReportScreenState extends State<ReportsScreen> {
-  final baseUrl = 'https://psihkiugab.us-east-1.awsapprunner.com';
+  final baseUrl = Config.url;
   final List<MealReportCard> pending = [];
   final List<MealReportCard> notPending = [];
 
